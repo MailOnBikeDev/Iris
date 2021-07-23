@@ -35,7 +35,6 @@ class PedidoService {
   }
 
   async storageNuevoPedido(nuevoPedido) {
-    console.log(nuevoPedido);
     try {
       let pedido = await axios.post(
         `${API_URL}/pedidos/crear-nuevo-pedido`,

@@ -476,7 +476,7 @@ export default {
           this.pageSize
         );
 
-        const response = await PedidoService.historialPedidos(params);
+        const response = await PedidoService.searchPedidoProgramado(params);
         const { pedidos, totalPedidos } = response.data;
         this.pedidos = pedidos; // rows
         this.pedidosFiltrados = pedidos
