@@ -615,7 +615,7 @@ export default {
         const comision = await this.obtenerComision(this.nuevoPedido.mobiker);
         this.nuevoPedido.comision =
           this.nuevoPedido.tarifa !== 0
-            ? (this.nuevoPedido.tarifa * comision).toFixed(2)
+            ? +(this.nuevoPedido.tarifa * comision).toFixed(2)
             : 0;
       }
     },
@@ -631,7 +631,7 @@ export default {
         const comision = await this.obtenerComision(this.nuevoPedido.mobiker);
         this.nuevoPedido.comision =
           this.nuevoPedido.tarifa !== 0
-            ? (this.nuevoPedido.tarifa * comision).toFixed(2)
+            ? +(this.nuevoPedido.tarifa * comision).toFixed(2)
             : 0;
       }
     },

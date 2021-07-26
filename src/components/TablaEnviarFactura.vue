@@ -132,7 +132,7 @@ export default {
       this.info.forEach((detalle) => {
         total += detalle.tarifa;
       });
-      return total.toFixed(2);
+      return +total.toFixed(2);
     },
   },
   methods: {

@@ -510,7 +510,7 @@
                 <td></td>
                 <td></td>
                 <td class="p-1 text-lg font-bold text-center text-primary">
-                  <span>{{ +distanciaTotal.toFixed(2) }}</span> km.
+                  <span>{{ +distanciaTotal.toFixed(1) }}</span> km.
                 </td>
                 <td class="p-1 text-lg font-bold text-center text-primary">
                   S/. <span>{{ tarifaTotal }}</span>
@@ -714,7 +714,7 @@ export default {
         const comision = await this.obtenerComision(this.pedido.mobiker);
         this.pedido.comision =
           this.pedido.tarifa !== 0
-            ? (this.pedido.tarifa * comision).toFixed(2)
+            ? +(this.pedido.tarifa * comision).toFixed(2)
             : 0;
       }
     },

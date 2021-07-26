@@ -126,7 +126,7 @@ export default {
         }
       });
 
-      return tarifaEcommerce.toFixed(2);
+      return +tarifaEcommerce.toFixed(2);
     },
 
     calcularComisionEcommerce() {
@@ -138,7 +138,7 @@ export default {
         }
       });
 
-      return comisionEcommerce.toFixed(2);
+      return +comisionEcommerce.toFixed(2);
     },
 
     contarExpress() {
@@ -170,7 +170,7 @@ export default {
         }
       });
 
-      return tarifaExpress.toFixed(2);
+      return +tarifaExpress.toFixed(2);
     },
 
     calcularComisionExpress() {
@@ -186,7 +186,7 @@ export default {
         }
       });
 
-      return comisionExpress.toFixed(2);
+      return +comisionExpress.toFixed(2);
     },
 
     calcularPagosEfectivo() {
@@ -202,21 +202,21 @@ export default {
         // pagoEfectivo += pedido.recaudo;
       });
 
-      return pagoEfectivo.toFixed(2);
+      return +pagoEfectivo.toFixed(2);
     },
 
     totalComisiones() {
       let total =
         parseFloat(this.calcularComisionEcommerce) +
         parseFloat(this.calcularComisionExpress);
-      return total.toFixed(2);
+      return +total.toFixed(2);
     },
 
     totalTarifa() {
       let total =
         parseFloat(this.calcularTarifaEcommerce) +
         parseFloat(this.calcularTarifaExpress);
-      return total.toFixed(2);
+      return +total.toFixed(2);
     },
 
     totalPagar() {
@@ -225,7 +225,7 @@ export default {
         parseFloat(this.calcularComisionExpress);
       let pagoPorEfectivo = parseFloat(this.calcularPagosEfectivo);
       let totalAPagar = pagoPorComision - pagoPorEfectivo;
-      return totalAPagar.toFixed(2);
+      return +totalAPagar.toFixed(2);
     },
   },
   methods: {

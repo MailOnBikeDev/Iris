@@ -606,7 +606,7 @@ export default {
         );
         this.editarPedido.comision =
           this.editarPedido.tarifa !== 0
-            ? (this.editarPedido.tarifa * comision).toFixed(2)
+            ? +(this.editarPedido.tarifa * comision).toFixed(2)
             : 0;
       }
     },
@@ -624,7 +624,7 @@ export default {
         );
         this.editarPedido.comision =
           this.editarPedido.tarifa !== 0
-            ? (this.editarPedido.tarifa * comision).toFixed(2)
+            ? +(this.editarPedido.tarifa * comision).toFixed(2)
             : 0;
       }
     },
