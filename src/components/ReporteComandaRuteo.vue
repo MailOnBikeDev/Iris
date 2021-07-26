@@ -1,6 +1,6 @@
 <template>
   <div
-    class="absolute z-40 w-1/2 px-10 py-4 transform -translate-x-1/2 shadow-xl -translate-y-2/3 bg-primary top-3/4 left-1/2 rounded-xl"
+    class="absolute z-40 w-1/2 px-10 py-4 transform -translate-x-1/2 shadow-xl bg-primary top-12 left-1/2 rounded-xl"
   >
     <div class="absolute -top-4 -right-2">
       <button
@@ -214,19 +214,19 @@ export default {
     sumarTarifas(pedidos) {
       const total = pedidos.reduce((acc, tarifa) => +tarifa.tarifa + acc, 0);
 
-      return total;
+      return +total.toFixed(2);
     },
 
     sumarRecaudos(pedidos) {
       const total = pedidos.reduce((acc, recaudo) => +recaudo.recaudo + acc, 0);
 
-      return total;
+      return +total.toFixed(2);
     },
 
     sumarTramites(pedidos) {
       const total = pedidos.reduce((acc, tramite) => +tramite.tramite + acc, 0);
 
-      return total;
+      return +total.toFixed(2);
     },
 
     sumarComisiones(comisiones) {
@@ -235,7 +235,7 @@ export default {
         0
       );
 
-      return total;
+      return +total.toFixed(2);
     },
 
     sumarCO2(emisiones) {

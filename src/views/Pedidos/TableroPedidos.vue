@@ -17,7 +17,7 @@
           showRuteo ||
           showComandaRuteo
       "
-    ></div>
+    />
 
     <ReporteComanda
       :showComanda="showComanda"
@@ -35,7 +35,6 @@
     <CambiarStatusPedido
       :showCambiarStatus="showCambiarStatus"
       @cerrarModal="showCambiarStatus = false"
-      @refresh="refreshList"
       :currentPedido="currentPedido"
     />
 

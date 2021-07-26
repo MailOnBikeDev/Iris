@@ -1,6 +1,6 @@
 <template>
   <div
-    class="absolute z-40 w-11/12 h-auto px-10 py-4 transform -translate-x-1/2 shadow-xl -translate-y-1/4 bg-primary top-1/3 left-1/2 rounded-xl"
+    class="absolute z-40 w-11/12 h-auto px-10 py-4 transform -translate-x-1/2 shadow-xl bg-primary top-12 left-1/2 rounded-xl"
   >
     <div class="absolute -top-4 -right-2">
       <button
@@ -26,7 +26,7 @@
 
     <div class="flex flex-row justify-around mt-6">
       <router-link
-      :to="`/pedidos/ruteo/${currentRuta.ruta.id}`"
+        :to="`/pedidos/ruteo/${currentRuta.ruta.id}`"
         custom
         v-slot="{ navigate }"
         class="px-6 py-2 font-bold text-white bg-yellow-600 rounded-xl focus:outline-none hover:bg-yellow-500"

@@ -19,7 +19,6 @@
     <CambiarStatusPedido
       :showCambiarStatus="showCambiarStatus"
       @cerrarModal="showCambiarStatus = false"
-      @refresh="refreshList"
       :currentPedido="currentPedido"
     />
 

@@ -5,12 +5,12 @@
   >
     <div class="mb-2 text-center">
       <span class="resalta">CO2 Ahorrado: </span>
-      <span class="select-all">{{ estadisticas.CO2Ahorrado }}</span>
+      <span class="select-all">{{ +estadisticas.CO2Ahorrado.toFixed(1) }}</span>
     </div>
 
     <div class="mb-2 text-center">
       <span class="resalta">Ruido evitado: </span>
-      <span class="select-all">{{ estadisticas.ruido }}</span>
+      <span class="select-all">{{ +estadisticas.ruido.toFixed(1) }}</span>
     </div>
   </div>
 </template>

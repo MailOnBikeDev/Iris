@@ -1,7 +1,7 @@
 <template>
   <div
     v-if="showDetalle"
-    class="absolute z-40 w-11/12 h-auto p-4 mx-auto transform -translate-x-1/2 shadow-xl -translate-y-2/3 bg-primary rounded-xl top-2/3 left-1/2"
+    class="absolute z-40 w-11/12 h-auto p-4 mx-auto transform -translate-x-1/2 shadow-xl bg-primary rounded-xl top-12 left-1/2"
   >
     <div class="absolute -top-4 -right-2">
       <button

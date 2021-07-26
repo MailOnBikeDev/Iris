@@ -188,10 +188,11 @@
       </p>
       <p class="mb-2">
         <span class="resalta">Comisión: </span>S/.
-        {{ currentPedido.comision }}
+        {{ +currentPedido.comision.toFixed(2) }}
       </p>
       <p class="mb-2">
-        <span class="resalta">Distancia: </span>{{ currentPedido.distancia }}Km
+        <span class="resalta">Distancia: </span
+        >{{ +currentPedido.distancia.toFixed(1) }}Km
       </p>
       <p class="mb-2">
         <span class="resalta">Pago: </span>{{ currentPedido.formaPago }}
