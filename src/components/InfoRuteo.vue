@@ -106,25 +106,128 @@
         v-for="ruta in infoRuta.pedidosRuta"
         :key="ruta.id"
       >
-        <div>{{ ruta.id }}</div>
-
-        <div class="col-span-2">{{ ruta.contactoConsignado }}</div>
-
-        <div class="col-span-2 text-left">{{ ruta.direccionConsignado }}</div>
-
-        <div>{{ ruta.distrito.distrito }}</div>
-
-        <div class="col-span-3">
-          <p v-if="ruta.otroDatoConsignado">{{ ruta.otroDatoConsignado }}</p>
-
-          <p v-else></p>
+        <div>
+          <router-link
+            :to="`/pedidos/tablero-pedidos/${ruta.id}`"
+            custom
+            v-slot="{ navigate }"
+          >
+            <span
+              @click="navigate"
+              role="link"
+              class="font-bold text-center cursor-pointer text-primary"
+              >{{ ruta.id }}</span
+            >
+          </router-link>
         </div>
 
-        <div>S/. {{ ruta.tarifa }}</div>
+        <div class="col-span-2">
+          <router-link
+            :to="`/pedidos/tablero-pedidos/${ruta.id}`"
+            custom
+            v-slot="{ navigate }"
+          >
+            <span
+              @click="navigate"
+              role="link"
+              class="font-bold text-center cursor-pointer text-primary"
+              >{{ ruta.contactoConsignado }}</span
+            >
+          </router-link>
+        </div>
 
-        <div>S/. {{ ruta.recaudo }}</div>
+        <div class="col-span-2">
+          <router-link
+            :to="`/pedidos/tablero-pedidos/${ruta.id}`"
+            custom
+            v-slot="{ navigate }"
+          >
+            <span
+              @click="navigate"
+              role="link"
+              class="font-bold cursor-pointer text-primary"
+              >{{ ruta.direccionConsignado }}</span
+            >
+          </router-link>
+        </div>
 
-        <div>S/. {{ ruta.tramite }}</div>
+        <div>
+          <router-link
+            :to="`/pedidos/tablero-pedidos/${ruta.id}`"
+            custom
+            v-slot="{ navigate }"
+          >
+            <span
+              @click="navigate"
+              role="link"
+              class="font-bold text-center cursor-pointer text-primary"
+              >{{ ruta.distrito.distrito }}</span
+            >
+          </router-link>
+        </div>
+
+        <div class="col-span-3">
+          <router-link
+            :to="`/pedidos/tablero-pedidos/${ruta.id}`"
+            custom
+            v-slot="{ navigate }"
+          >
+            <span
+              v-if="ruta.otroDatoConsignado"
+              @click="navigate"
+              role="link"
+              class="font-bold cursor-pointer text-primary"
+              >{{ ruta.otroDatoConsignado }}</span
+            >
+
+            <div v-else></div>
+          </router-link>
+        </div>
+
+        <div>
+          <router-link
+            :to="`/pedidos/tablero-pedidos/${ruta.id}`"
+            custom
+            v-slot="{ navigate }"
+          >
+            <span
+              @click="navigate"
+              role="link"
+              class="text-center cursor-pointer"
+              >S/. {{ ruta.tarifa }}</span
+            >
+          </router-link>
+        </div>
+
+        <div>
+          <router-link
+            :to="`/pedidos/tablero-pedidos/${ruta.id}`"
+            custom
+            v-slot="{ navigate }"
+          >
+            <span
+              @click="navigate"
+              role="link"
+              class="text-center cursor-pointer"
+              >S/. {{ ruta.recaudo }}</span
+            >
+          </router-link>
+        </div>
+
+        <div>
+          <router-link
+            :to="`/pedidos/tablero-pedidos/${ruta.id}`"
+            custom
+            v-slot="{ navigate }"
+          >
+            <span
+              @click="navigate"
+              role="link"
+              class="text-center cursor-pointer "
+              >S/. {{ ruta.tramite }}</span
+            >
+          </router-link>
+        </div>
       </div>
     </div>
   </div>
