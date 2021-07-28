@@ -68,8 +68,7 @@
 
         <div>
           <span class="resalta">Tarifa:</span>
-          S/. {{ sumarTarifas(currentRuta.pedidosRuta) }} -
-          {{ formatearFormaPago(currentRuta.pedidosRuta[0].formaPago) }}
+          S/. {{ sumarTarifas(currentRuta.pedidosRuta) }}
         </div>
         <div>
           <span class="resalta">Recaudo:</span>
@@ -98,13 +97,22 @@
           <div class="resalta">Destino {{ idx + 1 }}</div>
 
           <div>
+            <span class="resalta">Modalidad: </span>{{ destino.modalidad.tipo }}
+          </div>
+
+          <div>
+            <span class="resalta">Tarifa: </span> S./ {{ destino.tarifa }} -
+            {{ formatearFormaPago(destino.formaPago) }}
+          </div>
+
+          <div>
             <span class="resalta">Contacto: </span>
             {{ destino.contactoConsignado }}
           </div>
 
           <div>
             <span class="resalta">Dirección: </span>
-            {{ destino.direccionConsignado }}
+            {{ destino.direccionConsignado }} - {{ destino.distrito.distrito }}
           </div>
 
           <div v-if="destino.empresaConsignado">
@@ -115,10 +123,6 @@
           <div>
             <span class="resalta">Teléfono: </span>
             {{ destino.telefonoConsignado }}
-          </div>
-
-          <div>
-            <span class="resalta">Modalidad: </span>{{ destino.modalidad }}
           </div>
 
           <div v-if="destino.otroDatoConsignado">

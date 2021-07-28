@@ -19,9 +19,7 @@ __Contacto:__ {{ currentRuta[0].contactoRemitente }} - {{
 __Llevar:__ {{ currentRuta[0].tipoCarga }}
 __Modalidad:__ RUTEO
 
-__Tarifa:__ S/. {{ sumarTarifas(currentRuta) }} - {{
-        formatearFormaPago(currentRuta[0].formaPago)
-      }}
+__Tarifa:__ S/. {{ sumarTarifas(currentRuta) }}
 __Recaudo:__ S/. {{ sumarRecaudos(currentRuta) }}
 __Trámite:__ S/. {{ sumarTramites(currentRuta) }}
 __Mi comisión:__ S/. {{ sumarComisiones(currentRuta) }}
@@ -36,12 +34,17 @@ _____________________________________
 **Destino {{ idx + 1 }}**
 __Pedido:__ #{{ destino.id }}
 __Modalidad:__ **{{ destino.modalidad.tipo }}**
+__Tarifa: __ S/ {{ destino.tarifa }} - {{
+          formatearFormaPago(destino.formaPago)
+        }}
 __Contacto:__ {{ destino.contactoConsignado }} {{
           destino.empresaConsignado
             ? "- " + destino.empresaConsignado
             : undefined
         }}
-__Dirección:__ {{ destino.direccionConsignado }}
+__Dirección:__ {{ destino.direccionConsignado }} - {{
+          destino.distrito.distrito
+        }}
 __Teléfono:__ {{ destino.telefonoConsignado }}
 {{
           destino.otroDatoConsignado
@@ -97,19 +100,19 @@ export default {
     sumarTarifas(pedidos) {
       const total = pedidos.reduce((acc, tarifa) => +tarifa.tarifa + acc, 0);
 
-      return total;
+      return +total.toFixed(2);
     },
 
     sumarRecaudos(pedidos) {
       const total = pedidos.reduce((acc, recaudo) => +recaudo.recaudo + acc, 0);
 
-      return total;
+      return +total.toFixed(2);
     },
 
     sumarTramites(pedidos) {
       const total = pedidos.reduce((acc, tramite) => +tramite.tramite + acc, 0);
 
-      return total;
+      return +total.toFixed(2);
     },
 
     sumarComisiones(comisiones) {
@@ -118,7 +121,7 @@ export default {
         0
       );
 
-      return total;
+      return +total.toFixed(2);
     },
 
     sumarCO2(emisiones) {
@@ -127,13 +130,13 @@ export default {
         0
       );
 
-      return total;
+      return +total.toFixed(1);
     },
 
     sumarHorasRuido(horas) {
       const total = horas.reduce((acc, hora) => +hora.ruido + acc, 0);
 
-      return total;
+      return +total.toFixed(1);
     },
   },
 };
