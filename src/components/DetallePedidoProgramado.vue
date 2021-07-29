@@ -194,16 +194,15 @@ export default {
     },
   },
   methods: {
-    handleAsignarPedido() {
+    async handleAsignarPedido() {
       try {
         const mobikerAsignado = this.mobikers.filter(
           (mobiker) => mobiker.fullName === this.pedidoAsignado.mobiker
         );
 
-        this.pedidosArray.forEach(async (pedido) => {
+        for (let pedido of this.pedidosArray) {
           this.pedidoAsignado.comision = +(
-            parseFloat(pedido.tarifa) *
-            parseFloat(mobikerAsignado[0].rango.comision)
+            +pedido.tarifa * +mobikerAsignado[0].rango.comision
           ).toFixed(2);
 
           const response = await PedidoService.asignarPedido(
@@ -221,7 +220,7 @@ export default {
           } else {
             this.statusAsignado = false;
           }
-        });
+        }
       } catch (error) {
         console.error(`Error al asignar Pedidos: ${error.message}`);
       }
@@ -241,7 +240,6 @@ export default {
     },
 
     copiarComanda() {
-      console.log(this.$refs.comanda.innerText);
       this.$copyText(this.$refs.comanda.innerText).then(() => {
         this.comandaCopiada = true;
         console.log("Texto copiado");
