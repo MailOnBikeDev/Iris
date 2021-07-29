@@ -899,23 +899,23 @@ export default {
             for (let x = 0; x < cells.length; x++) {
               switch (x) {
                 case 0: {
-                  row["contactoConsignado"] = cells[x];
+                  row["contactoConsignado"] = cells[x].trim();
                   break;
                 }
                 case 1: {
-                  row["direccionConsignado"] = cells[x];
+                  row["direccionConsignado"] = cells[x].trim();
                   break;
                 }
                 case 2: {
-                  row["distritoConsignado"] = cells[x];
+                  row["distritoConsignado"] = cells[x].trim();
                   break;
                 }
                 case 3: {
-                  row["telefonoConsignado"] = cells[x];
+                  row["telefonoConsignado"] = cells[x].trim();
                   break;
                 }
                 case 4: {
-                  row["otroDatoConsignado"] = cells[x];
+                  row["otroDatoConsignado"] = cells[x].trim();
                   break;
                 }
               }
