@@ -106,6 +106,11 @@
           </div>
 
           <div>
+            <span class="resalta">Comisión: </span>
+            {{ destino.comision }}
+          </div>
+
+          <div>
             <span class="resalta">Contacto: </span>
             {{ destino.contactoConsignado }}
           </div>

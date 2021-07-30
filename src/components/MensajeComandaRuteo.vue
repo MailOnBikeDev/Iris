@@ -34,9 +34,10 @@ _____________________________________
 **Destino {{ idx + 1 }}**
 __Pedido:__ #{{ destino.id }}
 __Modalidad:__ **{{ destino.modalidad.tipo }}**
-__Tarifa: __ S/ {{ destino.tarifa }} - {{
+__Tarifa: __ S/. {{ destino.tarifa }} - {{
           formatearFormaPago(destino.formaPago)
         }}
+__Mi comisión:__ S/. {{ destino.comision }}
 __Contacto:__ {{ destino.contactoConsignado }} {{
           destino.empresaConsignado
             ? "- " + destino.empresaConsignado
