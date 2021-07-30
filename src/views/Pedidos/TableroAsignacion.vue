@@ -11,6 +11,7 @@
     <div class="overlay" v-if="showDetalle || showResumen || showRuteo"></div>
 
     <DetallePedidoProgramado
+      v-if="showDetalle"
       :showDetalle="showDetalle"
       @cerrarDetalle="closeModal"
       @refresh="refreshList"
