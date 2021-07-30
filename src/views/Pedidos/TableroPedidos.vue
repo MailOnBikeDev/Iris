@@ -468,12 +468,12 @@ export default {
   computed: {
     totalPedidosDelDia() {
       let total = this.pedidos.reduce((acc, pedido) => {
-        if (pedido.statusId !== 6) {
-          return acc + +pedido.viajes;
+        if (pedido.status.id !== 6) {
+          return +pedido.viajes + acc;
         }
+        return acc;
       }, 0);
-
-      return +total;
+      return total;
     },
   },
   methods: {
@@ -509,6 +509,7 @@ export default {
         this.pedidos = pedidos; // rows
         this.pedidosFiltrados = pedidos;
         this.cantidadPedidos = totalPedidos; // count
+
         this.loading = false;
       } catch (error) {
         console.error(`Error al obtener los Pedidos:`);
