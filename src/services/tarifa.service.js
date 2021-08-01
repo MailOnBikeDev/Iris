@@ -307,10 +307,6 @@ export default function calcularTarifa(
               )
             : +Math.ceil(
                 tarifaBase + (distancia - distanciaBase) * factorKmBase
-              )(
-                (tarifaSugerida = +Math.ceil(
-                  tarifaBase + (distancia - distanciaBase) * factorKmBase
-                ))
               );
         tarifaSugerida =
           modalidad === "Con Retorno"
