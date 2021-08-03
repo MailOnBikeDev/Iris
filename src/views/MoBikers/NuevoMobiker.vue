@@ -407,6 +407,7 @@ export default {
         { equipo: "Caja Térmica" },
         { equipo: "Jaba/Canastilla" },
         { equipo: "Mochila" },
+        { equipo: "Mochila MoB" },
       ],
       cuentaBancaria: [
         { cuenta: "Sin Cuenta" },

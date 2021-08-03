@@ -16,8 +16,8 @@ export const mobikers = {
   actions: {
     async getMobikers({ commit }) {
       try {
-        const response = await MobikerService.getMobikers();
-        commit("setMobikersArray", response.data);
+        const response = await MobikerService.filterMobikers("Activo");
+        commit("setMobikersArray", response);
       } catch (error) {
         console.error(`Mensaje de error desde la Store: ${error.message}`);
       }
@@ -29,20 +29,6 @@ export const mobikers = {
         const comision = res.rango.comision;
 
         return comision;
-      } catch (error) {
-        console.error(`Mensaje de error desde la Store: ${error.message}`);
-      }
-    },
-
-    buscarMobikers({ state }, buscador) {
-      try {
-        const filtro = state.mobikers.filter((mobiker) => {
-          if (mobiker.fullName.toLowerCase().includes(buscador.toLowerCase())) {
-            return mobiker;
-          }
-        });
-
-        return filtro;
       } catch (error) {
         console.error(`Mensaje de error desde la Store: ${error.message}`);
       }

@@ -186,7 +186,6 @@
           >
           <datepicker
             v-model="editarMobiker.fechaNacimiento"
-            type="date"
             v-validate="'required'"
             name="fechaNacimiento"
             input-class="input"
@@ -409,6 +408,7 @@ export default {
         { equipo: "Caja Térmica" },
         { equipo: "Jaba/Canastilla" },
         { equipo: "Mochila" },
+        { equipo: "Mochila MoB" },
       ],
       cuentaBancaria: [
         { cuenta: "Sin Cuenta" },
@@ -432,9 +432,9 @@ export default {
       es: es,
     };
   },
-  async mounted() {
+  mounted() {
     try {
-      await this.getMobiker(this.$route.params.id);
+      this.getMobiker(this.$route.params.id);
     } catch (error) {
       console.error("Mensaje de error:", error);
     }
@@ -455,7 +455,16 @@ export default {
 
         this.editarMobiker = response.data;
         this.editarMobiker.rango = response.data.rango.rangoMoBiker;
-        console.log(this.editarMobiker.fechaIngreso);
+
+        // Acomodando Fechas
+        this.editarMobiker.fechaNacimiento = new Date(
+          new Date(this.editarMobiker.fechaNacimiento).getTime() +
+            1000 * 60 * 60 * 5
+        );
+        this.editarMobiker.fechaIngreso = new Date(
+          new Date(this.editarMobiker.fechaIngreso).getTime() +
+            1000 * 60 * 60 * 5
+        );
       } catch (error) {
         console.error(`Error al obtener el MoBiker: ${error}`);
       }
@@ -467,15 +476,6 @@ export default {
         if (!isValid) {
           return;
         }
-
-        console.log(typeof this.editarMobiker.fechaNacimiento);
-        console.log(this.editarMobiker.fechaNacimiento);
-        // this.editarMobiker.fechaIngreso = this.editarMobiker.fechaIngreso
-        //   .toISOString()
-        //   .split("T")[0];
-        // this.editarMobiker.fechaNacimiento = this.editarMobiker.fechaNacimiento
-        //   .toISOString()
-        //   .split("T")[0];
 
         const response = await MobikerService.editMobiker(
           this.$route.params.id,
@@ -497,6 +497,10 @@ export default {
         this.alert.success = false;
         setTimeout(() => (this.alert.show = false), 2500);
       }
+    },
+
+    revision() {
+      console.log(this.editarMobiker.fechaNacimiento);
     },
 
     cancelar() {

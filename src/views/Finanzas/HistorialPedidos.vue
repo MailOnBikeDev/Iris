@@ -18,8 +18,10 @@
 
     <CambiarStatusPedido
       :showCambiarStatus="showCambiarStatus"
-      @cerrarModal="showCambiarStatus = false"
-      @refresh="refreshList"
+      @cerrarModal="
+        showCambiarStatus = false;
+        refreshList();
+      "
       :currentPedido="currentPedido"
     />
 
@@ -32,22 +34,17 @@
           :monday-first="true"
           :language="es"
           format="dd MMM"
+          @input="retrievePedidos"
         />
         <datepicker
           v-model="fechaFin"
           name="fechaFin"
-          input-class="w-24 p-2 font-bold text-center cursor-pointer focus:outline-none text-primary"
+          input-class="w-24 p-2 font-bold text-center cursor-pointer rounded-r-xl focus:outline-none text-primary"
           :monday-first="true"
           :language="es"
           format="dd MMM"
+          @input="retrievePedidos"
         />
-        <button
-          type="button"
-          class="px-2 py-1 mb-1 font-bold bg-white rounded-r-xl hover:bg-info hover:text-white focus:outline-none text-secondary"
-          @click="retrievePedidos"
-        >
-          Buscar
-        </button>
       </div>
 
       <div>
@@ -88,24 +85,52 @@
           >Facturacion</span
         >
       </router-link>
+
+      <router-link
+        to="/finanzas/transferencias"
+        class="px-6 py-2 font-bold text-white bg-secondary rounded-xl focus:outline-none hover:bg-info"
+        custom
+        v-slot="{ navigate }"
+      >
+        <span @click="navigate" role="link" class="text-center cursor-pointer"
+          >Transferencias</span
+        >
+      </router-link>
+
+      <router-link
+        to="/finanzas/recaudos"
+        class="px-6 py-2 font-bold text-white bg-secondary rounded-xl focus:outline-none hover:bg-info"
+        custom
+        v-slot="{ navigate }"
+      >
+        <span @click="navigate" role="link" class="text-center cursor-pointer"
+          >Recaudos</span
+        >
+      </router-link>
     </div>
 
-    <div class="grid grid-cols-4 gap-2">
-      <div class="flex flex-row justify-center">
+    <div class="grid grid-cols-10 gap-2">
+      <div class="flex flex-row justify-center col-span-2">
         <p>
           <span class="resalta">Número de Pedidos:</span> {{ cantidadPedidos }}
         </p>
       </div>
 
       <div
-        class="inline-grid items-center grid-cols-7 col-span-3 text-sm font-bold text-center text-primary"
+        class="inline-grid items-center grid-cols-9 col-span-8 text-sm font-bold text-center text-primary"
       >
         <button @click="sortPorId" class="focus:outline-none">
           <p class="font-bold"># Pedido</p>
         </button>
+        <div>
+          <p class="font-bold">Cliente</p>
+        </div>
         <button @click="sortPorOrigen" class="focus:outline-none">
           <p class="font-bold">Origen</p>
         </button>
+        <div>
+          <p class="font-bold">Consignado</p>
+        </div>
         <button @click="sortPorDestino" class="focus:outline-none">
           <p class="font-bold">Destino</p>
         </button>
@@ -123,82 +148,22 @@
         </div>
       </div>
 
-      <div class="p-4 bg-white border border-black">
-        <h2 class="mb-4 text-3xl font-bold text-primary">
+      <div class="col-span-2 p-4 bg-white border border-black">
+        <h2 class="mb-2 text-2xl font-bold text-primary">
           Cliente
         </h2>
 
-        <div class="flex flex-col text-sm max-h-96" v-if="currentPedido">
-          <p class="mb-2">
-            <span class="resalta">Contacto: </span>
-            {{ currentPedido.contactoRemitente }}
-          </p>
-          <p class="mb-2">
-            <span class="resalta">Empresa: </span
-            >{{ currentPedido.empresaRemitente }}
-          </p>
-          <p class="mb-2">
-            <span class="resalta">Dirección: </span
-            >{{ currentPedido.direccionRemitente }}
-          </p>
-          <p class="mb-2">
-            <span class="resalta">Distrito: </span
-            >{{ currentPedido.distritoRemitente }}
-          </p>
-          <p class="mb-2">
-            <span class="resalta">Teléfono: </span
-            >{{ currentPedido.telefonoRemitente }}
-          </p>
-          <p class="mb-2">
-            <span class="resalta">Observaciones: </span
-            >{{ currentPedido.otroDatoRemitente }}
-          </p>
-          <p class="mb-2">
-            <span class="resalta">Forma de Pago: </span
-            >{{ currentPedido.formaPago }}
-          </p>
-          <p class="mb-2">
-            <span class="resalta">Tarifa: </span>S/.
-            {{ currentPedido.tarifa }}
-          </p>
-          <p class="mb-2">
-            <span class="resalta">Modalidad: </span
-            >{{ currentPedido.modalidad.tipo }}
-          </p>
-          <p class="mb-2">
-            <span class="resalta">Rol: </span>{{ currentPedido.rolCliente }}
-          </p>
-        </div>
-
-        <div class="flex flex-col text-sm max-h-96" v-else>
-          <p class="mb-2">
-            <span class="resalta">Contacto: </span>
-          </p>
-          <p class="mb-2">
-            <span class="resalta">Empresa: </span>
-          </p>
-          <p class="mb-2">
-            <span class="resalta">Dirección: </span>
-          </p>
-          <p class="mb-2"><span class="resalta">Distrito: </span></p>
-          <p class="mb-2"><span class="resalta">Teléfono: </span></p>
-          <p class="mb-2">
-            <span class="resalta">Observaciones: </span>
-          </p>
-          <p class="mb-2">
-            <span class="resalta">Forma de Pago: </span>
-          </p>
-          <p class="mb-2"><span class="resalta">Tarifa: </span>S/.</p>
-          <p class="mb-2"><span class="resalta">Modalidad: </span></p>
-          <p class="mb-2"><span class="resalta">Rol: </span></p>
-        </div>
+        <ShowCliente :currentPedido="currentPedido" />
       </div>
 
       <div
-        class="col-span-3 overflow-y-auto bg-white border border-black pedidos-scroll max-h-96"
+        class="col-span-8 overflow-y-auto bg-white border border-black pedidos-scroll max-h-96"
       >
+        <Loading v-if="loading" />
+
         <div
-          class="grid items-center grid-cols-7 py-2 text-sm text-center border-b-2 cursor-pointer gap-x-1 h-14 border-primary hover:bg-info"
+          v-else
+          class="grid items-center h-auto grid-cols-9 py-2 text-xs text-center border-b-2 cursor-pointer gap-x-1 border-primary hover:bg-info"
           :class="{ 'bg-info text-white font-bold': pedido.id == currentIndex }"
           v-for="pedido in pedidosFiltrados"
           :key="pedido.id"
@@ -208,10 +173,16 @@
             <p>{{ pedido.id }}</p>
           </div>
           <div>
+            <p>{{ pedido.empresaRemitente }}</p>
+          </div>
+          <div>
             <p v-if="pedido.rolCliente === 'Remitente'">
               {{ pedido.distritoRemitente }}
             </p>
             <p v-else>{{ pedido.distrito.distrito }}</p>
+          </div>
+          <div>
+            <p>{{ pedido.contactoConsignado }}</p>
           </div>
           <div>
             <p v-if="pedido.rolCliente === 'Remitente'">
@@ -288,6 +259,8 @@
 import PedidoService from "@/services/pedido.service";
 import DetalleHistorialPedido from "@/components/DetalleHistorialPedido";
 import CambiarStatusPedido from "@/components/CambiarStatusPedido";
+import Loading from "@/components/Loading";
+import ShowCliente from "@/components/ShowCliente";
 import Datepicker from "vuejs-datepicker";
 import { es } from "vuejs-datepicker/dist/locale";
 import Pagination from "@/components/Pagination.vue";
@@ -301,6 +274,8 @@ export default {
     Datepicker,
     Pagination,
     CambiarStatusPedido,
+    ShowCliente,
+    Loading,
   },
   data() {
     return {
@@ -313,6 +288,8 @@ export default {
       fechaInicio: new Date(seisDiasAtras),
       fechaFin: new Date(),
       buscador: "",
+
+      loading: false,
 
       page: 1,
       cantidadPedidos: 0,
@@ -348,6 +325,7 @@ export default {
 
     async buscarPedido() {
       try {
+        this.loading = true;
         const response = await PedidoService.searchPedido(this.buscador);
 
         this.pedidosFiltrados = response.data;
@@ -355,33 +333,33 @@ export default {
         if (this.buscador.trim() === "") {
           this.pedidosFiltrados = this.pedidos;
         }
+        this.loading = false;
       } catch (error) {
         console.error(`Error al buscar un Pedido. ${error.message}`);
       }
     },
 
-    retrievePedidos() {
-      const params = this.getRequestParams(
-        this.fechaInicio.toISOString().split("T")[0],
-        this.fechaFin.toISOString().split("T")[0],
-        this.page,
-        this.pageSize
-      );
+    async retrievePedidos() {
+      try {
+        this.loading = true;
+        const params = this.getRequestParams(
+          this.$date(this.fechaInicio).format("YYYY-MM-DD"),
+          this.$date(this.fechaFin).format("YYYY-MM-DD"),
+          this.page,
+          this.pageSize
+        );
 
-      PedidoService.historialPedidos(params).then(
-        (response) => {
-          const { pedidos, totalPedidos } = response.data;
-          this.pedidos = pedidos; // rows
-          this.pedidosFiltrados = pedidos; // rows
-          this.cantidadPedidos = totalPedidos; // count
-        },
-        (error) => {
-          this.pedidos =
-            (error.response && error.response.data) ||
-            error.message ||
-            error.toString();
-        }
-      );
+        const response = await PedidoService.historialPedidos(params);
+
+        const { pedidos, totalPedidos } = response.data;
+        this.pedidos = pedidos; // rows
+        this.pedidosFiltrados = pedidos; // rows
+        this.cantidadPedidos = totalPedidos; // count
+
+        this.loading = false;
+      } catch (error) {
+        console.error(`Error al obtener Pedidos. ${error.message}`);
+      }
     },
 
     handlePageChange(value) {
@@ -394,13 +372,12 @@ export default {
       this.currentIndex = index;
     },
 
-    refreshList() {
-      this.fechaInicio = new Date(seisDiasAtras);
-      this.fechaFin = new Date();
-      this.retrievePedidos();
+    async refreshList() {
+      await this.retrievePedidos();
 
       this.currentPedido = null;
       this.currentIndex = -1;
+      this.buscador = "";
     },
 
     sortPorId() {

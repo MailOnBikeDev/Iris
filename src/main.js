@@ -17,6 +17,10 @@ import {
   faEye,
   faBicycle,
   faSpinner,
+  faTrashAlt,
+  faRoute,
+  faCheckCircle,
+  faChartBar,
 } from "@fortawesome/free-solid-svg-icons";
 import VueDayjs from "vue-dayjs-plugin";
 import VueClipboard from "vue-clipboard2";
@@ -31,7 +35,11 @@ library.add(
   faWindowMaximize,
   faEye,
   faBicycle,
-  faSpinner
+  faSpinner,
+  faTrashAlt,
+  faRoute,
+  faCheckCircle,
+  faChartBar
 );
 
 Vue.config.productionTip = false;

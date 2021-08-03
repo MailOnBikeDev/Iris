@@ -10,7 +10,22 @@ class MobikerService {
         headers: authHeader(),
       });
 
-      return mobikers;
+      return mobikers.data;
+    } catch (error) {
+      console.error(`Mensaje de error desde MobikerService: ${error.message}`);
+    }
+  }
+
+  async filterMobikers(status) {
+    try {
+      let mobikers = await axios.get(
+        `${API_URL}/mobikers/filter-mobiker?status=${status}`,
+        {
+          headers: authHeader(),
+        }
+      );
+
+      return mobikers.data;
     } catch (error) {
       console.error(`Mensaje de error desde MobikerService: ${error.message}`);
     }
@@ -153,7 +168,7 @@ class MobikerService {
         headers: authHeader(),
       });
 
-      return mobiker;
+      return mobiker.data;
     } catch (error) {
       console.error("Mensaje de error: ", error.message);
     }

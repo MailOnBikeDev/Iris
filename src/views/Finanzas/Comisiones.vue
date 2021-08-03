@@ -42,22 +42,17 @@
           :monday-first="true"
           :language="es"
           format="dd MMM"
+          @input="buscarPorFecha"
         />
         <datepicker
           v-model="fechaFin"
           name="fechaFin"
-          input-class="w-24 p-2 font-bold text-center cursor-pointer focus:outline-none text-primary"
+          input-class="w-24 p-2 font-bold text-center cursor-pointer rounded-r-xl focus:outline-none text-primary"
           :monday-first="true"
           :language="es"
           format="dd MMM"
+          @input="buscarPorFecha"
         />
-        <button
-          type="button"
-          class="px-2 py-1 mb-1 font-bold bg-white rounded-r-xl hover:bg-info hover:text-white focus:outline-none text-secondary"
-          @click="buscarPorFecha"
-        >
-          Buscar
-        </button>
       </div>
 
       <router-link
@@ -79,8 +74,9 @@
       </button>
 
       <button
-        class="px-6 py-2 font-bold text-white bg-green-600 rounded-xl focus:outline-none hover:bg-green-500"
+        class="px-6 py-2 font-bold text-white bg-green-600 rounded-xl focus:outline-none hover:bg-green-500 disabled:bg-green-900"
         @click="showDetalle = true"
+        :disabled="!currentMobiker"
       >
         Enviar reporte
       </button>
@@ -119,17 +115,11 @@
       <div
         class="overflow-y-auto bg-white border border-black max-h-96 h-96 pedidos-scroll"
       >
-        <div v-if="loading" class="text-center mt-36">
-          <font-awesome-icon
-            size="5x"
-            class="animate-spin text-primary"
-            icon="spinner"
-          />
-        </div>
+        <Loading v-if="loading" />
 
         <div
           v-else
-          class="grid items-center grid-cols-3 px-2 text-sm text-center border-b-2 cursor-pointer h-14 border-primary hover:bg-info"
+          class="grid items-center h-10 grid-cols-3 py-2 text-sm text-center border-b-2 cursor-pointer border-primary hover:bg-info"
           :class="{
             'bg-info text-white font-bold': mobiker.mobiker.id == currentIndex,
           }"
@@ -150,8 +140,10 @@
       <div
         class="col-span-3 overflow-y-auto bg-white border border-black pedidos-scroll max-h-96"
       >
+        <Loading v-if="loading" />
         <div
-          class="grid items-center grid-cols-6 py-2 text-sm text-center border-b-2 cursor-pointer gap-x-1 h-14 border-primary hover:bg-info"
+          v-else
+          class="grid items-center h-auto grid-cols-6 py-4 text-xs text-center border-b-2 cursor-pointer gap-x-1 border-primary hover:bg-info"
           :class="{
             'bg-info text-white font-bold': pedido.id == currentPedidoIndex,
           }"
@@ -163,10 +155,9 @@
           </div>
 
           <div @click="setActivePedido(pedido, pedido.id)">
-            <p v-if="pedido.rolCliente === 'Remitente'">
+            <p>
               {{ pedido.empresaRemitente }}
             </p>
-            <p v-else>{{ pedido.empresaConsignado }}</p>
           </div>
 
           <div @click="setActivePedido(pedido, pedido.id)">
@@ -223,6 +214,7 @@
 import DetallePedidoComisiones from "@/components/DetallePedidoComisiones";
 import MobikerService from "@/services/mobiker.service";
 import ReporteComisiones from "@/components/ReporteComisiones";
+import Loading from "@/components/Loading";
 import Datepicker from "vuejs-datepicker";
 import Pagination from "@/components/Pagination.vue";
 import { es } from "vuejs-datepicker/dist/locale";
@@ -236,6 +228,7 @@ export default {
     Datepicker,
     Pagination,
     DetallePedidoComisiones,
+    Loading,
   },
   data() {
     return {
@@ -259,6 +252,9 @@ export default {
       pageSize: 200,
       es: es,
     };
+  },
+  mounted() {
+    this.retrieveMoBikersConPedidos();
   },
   methods: {
     getRequestParams(desde, hasta, id, page, pageSize) {
@@ -289,8 +285,8 @@ export default {
 
     retrievePedidosMobikers() {
       const params = this.getRequestParams(
-        this.fechaInicio.toISOString().split("T")[0],
-        this.fechaFin.toISOString().split("T")[0],
+        this.$date(this.fechaInicio).format("YYYY-MM-DD"),
+        this.$date(this.fechaFin).format("YYYY-MM-DD"),
         this.currentIndex,
         this.page,
         this.pageSize
@@ -315,8 +311,8 @@ export default {
       try {
         this.loading = true;
         const params = {
-          desde: this.fechaInicio.toISOString().split("T")[0],
-          hasta: this.fechaFin.toISOString().split("T")[0],
+          desde: this.$date(this.fechaInicio).format("YYYY-MM-DD"),
+          hasta: this.$date(this.fechaFin).format("YYYY-MM-DD"),
         };
 
         const response = await MobikerService.getMobikersConPedidos(params);
@@ -336,6 +332,7 @@ export default {
       this.retrieveMoBikersConPedidos();
       this.currentMobiker = null;
       this.currentIndex = -1;
+      this.pedidosMobiker = [];
     },
 
     handlePageChange(value) {

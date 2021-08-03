@@ -4,7 +4,7 @@
       <Navigation />
     </header>
 
-    <main class="container justify-center mx-auto cols-md-12">
+    <main class="container justify-center mx-auto">
       <router-view />
     </main>
   </div>

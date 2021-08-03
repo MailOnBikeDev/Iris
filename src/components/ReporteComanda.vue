@@ -1,7 +1,7 @@
 <template>
   <div
     v-if="showComanda"
-    class="absolute z-40 w-1/2 px-10 py-4 transform -translate-x-1/2 -translate-y-1/2 shadow-xl bg-primary top-1/2 left-1/2 rounded-xl"
+    class="absolute z-40 w-1/2 px-10 py-4 transform -translate-x-1/2 shadow-xl bg-primary top-12 left-1/2 rounded-xl"
   >
     <div class="absolute -top-4 -right-2">
       <button
@@ -27,10 +27,11 @@
       </div>
 
       <!-- Texto de ejemplo para que el operador confirme la comanda -->
-      <div class="p-4">
+      <!-- Caso en que el Cliente sea Remitente -->
+      <div v-if="currentPedido.rolCliente === 'Remitente'" class="p-4">
         <div>
           <span class="resalta">Tipo Envío: </span
-          >{{ currentPedido.tipoDeEnvio.tipo }}
+          >{{ formatearTipoEnvio(currentPedido.tipoDeEnvio.tipo) }}
         </div>
         <div>
           <span class="resalta">
@@ -69,10 +70,6 @@
           <span class="resalta">Empresa: </span>
           {{ currentPedido.empresaConsignado }}
         </div>
-        <div v-if="currentPedido.otroDatoConsignado !== null">
-          <span class="resalta">IMPORTANTE: </span
-          >{{ currentPedido.otroDatoConsignado }}
-        </div>
         <div>
           <span class="resalta">Teléfono: </span>
           {{ currentPedido.telefonoConsignado }}
@@ -83,6 +80,96 @@
         <div>
           <span class="resalta">Modalidad: </span>
           {{ currentPedido.modalidad.tipo }}
+        </div>
+        <div v-if="currentPedido.otroDatoConsignado !== null">
+          <span class="resalta">IMPORTANTE: </span
+          >{{ currentPedido.otroDatoConsignado }}
+        </div>
+        <div>
+          <span class="resalta">Recaudo: </span>
+          S/. {{ currentPedido.recaudo }}
+        </div>
+        <br />
+        <div>
+          <span class="resalta">Tarifa: </span> S/. {{ currentPedido.tarifa }} -
+          {{ formatearFormaPago(currentPedido.formaPago) }}
+        </div>
+        <div>
+          <span class="resalta">Mi comisión: </span> S/.
+          {{ currentPedido.comision }}
+        </div>
+        <div><span class="resalta">Pedido: </span> #{{ currentPedido.id }}</div>
+        <div>
+          <span class="resalta">CO2: </span>
+          {{ +currentPedido.CO2Ahorrado.toFixed(1) }} Kg
+        </div>
+        <div>
+          <span class="resalta">Horas de Ruido: </span>
+          {{ +currentPedido.ruido.toFixed(1) }} h
+        </div>
+      </div>
+
+      <!-- Caso el Cliente es Destinatario -->
+      <div v-else class="p-4">
+        <div>
+          <span class="resalta">Tipo Envío: </span
+          >{{ formatearTipoEnvio(currentPedido.tipoDeEnvio.tipo) }}
+        </div>
+        <div>
+          <span class="resalta">
+            Origen:
+          </span>
+          {{ currentPedido.direccionConsignado }} -
+          {{ currentPedido.distrito.distrito }}
+        </div>
+        <div>
+          <span class="resalta">Empresa: </span
+          >{{ currentPedido.empresaConsignado }}
+        </div>
+        <div>
+          <span class="resalta">
+            Contacto:
+          </span>
+          {{ currentPedido.contactoConsignado }} -
+          {{ currentPedido.telefonoConsignado }}
+        </div>
+        <div v-if="currentPedido.otroDatoConsignado !== null">
+          <span class="resalta">IMPORTANTE: </span
+          >{{ currentPedido.otroDatoConsignado }}
+        </div>
+        <br />
+        <div>
+          <span class="resalta"> Destino: </span
+          >{{ currentPedido.direccionRemitente }} -
+
+          {{ currentPedido.distritoRemitente }}
+        </div>
+        <div>
+          <span class="resalta">Contacto: </span>
+          {{ currentPedido.contactoRemitente }}
+        </div>
+        <div v-if="currentPedido.empresaRemitente !== null">
+          <span class="resalta">Empresa: </span>
+          {{ currentPedido.empresaRemitente }}
+        </div>
+        <div>
+          <span class="resalta">Teléfono: </span>
+          {{ currentPedido.telefonoRemitente }}
+        </div>
+        <div>
+          <span class="resalta">Llevar: </span> {{ currentPedido.tipoCarga }}
+        </div>
+        <div>
+          <span class="resalta">Modalidad: </span>
+          {{ currentPedido.modalidad.tipo }}
+        </div>
+        <div v-if="currentPedido.otroDatoRemitente !== null">
+          <span class="resalta">IMPORTANTE: </span
+          >{{ currentPedido.otroDatoRemitente }}
+        </div>
+        <div>
+          <span class="resalta">Recaudo: </span>
+          S/. {{ currentPedido.recaudo }}
         </div>
         <br />
         <div>
@@ -170,6 +257,18 @@ export default {
       }
 
       return nuevaFormaPago;
+    },
+
+    formatearTipoEnvio(envio) {
+      let nuevoTipoEnvio;
+
+      if (envio === "EmpresaG" || envio === "Persona") {
+        nuevoTipoEnvio = "Express";
+      } else {
+        nuevoTipoEnvio = envio;
+      }
+
+      return nuevoTipoEnvio;
     },
   },
 };

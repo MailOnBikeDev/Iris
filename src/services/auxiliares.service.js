@@ -11,6 +11,10 @@ class AuxiliarService {
     return axios.get(`${API_URL}/auxiliares/distritos`);
   }
 
+  getZonaCobertura() {
+    return axios.get(`${API_URL}/auxiliares/zona-cobertura`);
+  }
+
   getTipoCarga() {
     return axios.get(`${API_URL}/auxiliares/tipos-de-carga`);
   }

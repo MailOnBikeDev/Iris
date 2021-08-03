@@ -27,6 +27,8 @@
         </button>
       </div>
 
+      <div class="overlay" v-if="showBuscador || showBuscadorDestinos"></div>
+
       <BuscadorCliente
         :showBuscador="showBuscador"
         @cerrarBuscador="showBuscador = false"
@@ -156,7 +158,7 @@
 
           <div class="col-span-2 ">
             <label for="direccionRemitente" class="label-input"
-              >Direccion</label
+              >Dirección</label
             >
             <input
               v-model="nuevoPedido.direccionRemitente"
@@ -229,6 +231,7 @@
               v-validate="'required'"
               name="tarifa"
               class="input"
+              min="0"
             />
             <div
               v-if="errors.has('tarifa')"
@@ -481,6 +484,9 @@
               v-model.number="nuevoPedido.recaudo"
               type="number"
               class="input"
+              @input="changeRecaudo"
+              @change="changeRecaudo"
+              min="0"
             />
           </div>
 
@@ -490,6 +496,7 @@
               v-model.number="nuevoPedido.tramite"
               type="number"
               class="input"
+              min="0"
             />
           </div>
         </div>
@@ -568,6 +575,8 @@ export default {
       memoriaCliente: null,
       es: es,
       tarifaMemoria: 0,
+      tarifaSugeridaMemoria: 0,
+      distanciaMemoria: 0,
     };
   },
   async mounted() {
@@ -606,7 +615,7 @@ export default {
         const comision = await this.obtenerComision(this.nuevoPedido.mobiker);
         this.nuevoPedido.comision =
           this.nuevoPedido.tarifa !== 0
-            ? (this.nuevoPedido.tarifa * comision).toFixed(2)
+            ? +(this.nuevoPedido.tarifa * comision).toFixed(2)
             : 0;
       }
     },
@@ -622,37 +631,44 @@ export default {
         const comision = await this.obtenerComision(this.nuevoPedido.mobiker);
         this.nuevoPedido.comision =
           this.nuevoPedido.tarifa !== 0
-            ? (this.nuevoPedido.tarifa * comision).toFixed(2)
+            ? +(this.nuevoPedido.tarifa * comision).toFixed(2)
             : 0;
-      }
-    },
-
-    "nuevoPedido.recaudo": function() {
-      if (this.nuevoPedido.recaudo !== 0) {
-        this.nuevoPedido.tarifa = +(this.tarifaMemoria + 2);
-      }
-      if (this.nuevoPedido.recaudo === 0) {
-        this.nuevoPedido.tarifa = this.tarifaMemoria;
       }
     },
 
     "nuevoPedido.modalidad": function() {
       if (this.nuevoPedido.modalidad === "Con Retorno") {
         this.nuevoPedido.viajes = 2;
+        this.nuevoPedido.distancia *= 2;
         if (this.nuevoPedido.tipoEnvio === "E-Commerce") {
           this.nuevoPedido.tarifa = this.tarifaMemoria * 2;
+          this.nuevoPedido.tarifaSugerida = this.tarifaSugeridaMemoria * 2;
         } else {
           this.nuevoPedido.tarifa += +Math.ceil(this.tarifaMemoria / 2);
+          this.nuevoPedido.tarifaSugerida += +Math.ceil(
+            this.tarifaSugeridaMemoria / 2
+          );
         }
       }
       if (this.nuevoPedido.modalidad === "Una vía") {
         this.nuevoPedido.viajes = 1;
         this.nuevoPedido.tarifa = this.tarifaMemoria;
+        this.nuevoPedido.tarifaSugerida = this.tarifaSugeridaMemoria;
+        this.nuevoPedido.distancia = this.distanciaMemoria;
       }
     },
   },
   methods: {
     ...mapActions("mobikers", ["obtenerComision"]),
+
+    changeRecaudo() {
+      if (this.nuevoPedido.recaudo !== 0) {
+        this.nuevoPedido.tarifa = +(this.tarifaMemoria + 2);
+      }
+      if (this.nuevoPedido.recaudo === 0) {
+        this.nuevoPedido.tarifa = +this.tarifaMemoria;
+      }
+    },
 
     async handleNuevoPedido() {
       try {
@@ -666,6 +682,7 @@ export default {
         }
 
         this.nuevoPedido.operador = this.$store.getters.operador;
+        this.nuevoPedido.isRuteo = false;
 
         const response = await PedidoService.storageNuevoPedido(
           this.nuevoPedido
@@ -710,6 +727,7 @@ export default {
         }, 1500);
 
         this.resetForm();
+        this.errors.items = [];
       } catch (error) {
         console.log(
           `Error al añadir Nuevo Pedido: ${error.response.data.message}`
@@ -723,23 +741,23 @@ export default {
 
     resetForm() {
       this.nuevoPedido.fecha = this.memoriaCliente.fecha;
-      this.nuevoPedido.contactoRemitente = this.memoriaCliente.contacto;
-      this.nuevoPedido.empresaRemitente = this.memoriaCliente.razonComercial;
-      this.nuevoPedido.telefonoRemitente = this.memoriaCliente.telefono;
-      this.nuevoPedido.direccionRemitente = this.memoriaCliente.direccion;
-      this.nuevoPedido.distritoRemitente = this.memoriaCliente.distrito.distrito;
-      this.nuevoPedido.formaPago = this.memoriaCliente.formaDePago.pago;
-      this.nuevoPedido.tipoCarga = this.memoriaCliente.tipoDeCarga.tipo;
-      this.nuevoPedido.rolCliente = this.memoriaCliente.rolCliente.rol;
-      this.nuevoPedido.tipoEnvio = this.memoriaCliente.tipoDeEnvio.tipo;
-      this.nuevoPedido.modalidad = "Una vía";
+      this.nuevoPedido.contactoRemitente = null;
+      this.nuevoPedido.empresaRemitente = null;
+      this.nuevoPedido.telefonoRemitente = null;
+      this.nuevoPedido.direccionRemitente = null;
+      this.nuevoPedido.distritoRemitente = null;
+      this.nuevoPedido.formaPago = null;
+      this.nuevoPedido.tipoCarga = null;
+      this.nuevoPedido.rolCliente = null;
+      this.nuevoPedido.tipoEnvio = null;
+      this.nuevoPedido.modalidad = null;
       this.nuevoPedido.contactoConsignado = null;
       this.nuevoPedido.empresaConsignado = null;
       this.nuevoPedido.telefonoConsignado = null;
       this.nuevoPedido.direccionConsignado = null;
-      this.nuevoPedido.distritoConsignado = "";
+      this.nuevoPedido.distritoConsignado = null;
       this.nuevoPedido.otroDatoConsignado = null;
-      this.nuevoPedido.tarifa = null;
+      this.nuevoPedido.tarifa = 0;
       this.nuevoPedido.tarifaSugerida = 0;
       this.nuevoPedido.comision = 0;
       this.nuevoPedido.distancia = null;
@@ -777,6 +795,13 @@ export default {
           this.nuevoPedido.distritoConsignado
         );
 
+        this.distanciaMemoria = this.nuevoPedido.distancia;
+        if (this.nuevoPedido.modalidad === "Con Retorno") {
+          this.nuevoPedido.distancia = this.distanciaMemoria * 2;
+        } else {
+          this.nuevoPedido.distancia = this.distanciaMemoria;
+        }
+
         if (
           this.nuevoPedido.distancia === null ||
           this.nuevoPedido.distancia === undefined ||
@@ -794,12 +819,15 @@ export default {
         // Calcular la tarifa
         const response = calcularTarifa(
           this.nuevoPedido.distancia,
-          this.nuevoPedido.tipoEnvio
+          this.nuevoPedido.tipoEnvio,
+          this.nuevoPedido.modalidad,
+          this.nuevoPedido.distritoConsignado
         );
 
         this.nuevoPedido.tarifa = response.tarifa;
         this.tarifaMemoria = response.tarifa;
         this.nuevoPedido.tarifaSugerida = response.tarifaSugerida;
+        this.tarifaSugeridaMemoria = response.tarifaSugerida;
 
         // Calcular las estadísticas Ecoamigables
         const stats = calcularEstadisticas(this.nuevoPedido.distancia);

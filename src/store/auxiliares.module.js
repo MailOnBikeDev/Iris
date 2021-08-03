@@ -2,6 +2,7 @@ import AuxiliarService from "@/services/auxiliares.service";
 
 const rolesUsuariosStorage = JSON.parse(localStorage.getItem("rolesUsuarios"));
 const distritosStorage = JSON.parse(localStorage.getItem("distritos"));
+const zonaCoberturaStorage = JSON.parse(localStorage.getItem("zonaCobertura"));
 const tiposDeCargaStorage = JSON.parse(localStorage.getItem("tiposDeCarga"));
 const tiposDeComprobanteStorage = JSON.parse(
   localStorage.getItem("tiposDeComprobante")
@@ -23,6 +24,7 @@ export const auxiliares = {
   state: {
     rolesUsuarios: rolesUsuariosStorage ? rolesUsuariosStorage : [],
     distritos: distritosStorage ? distritosStorage : [],
+    zonaCobertura: zonaCoberturaStorage ? zonaCoberturaStorage : [],
     tiposDeCarga: tiposDeCargaStorage ? tiposDeCargaStorage : [],
     tiposDeComprobante: tiposDeComprobanteStorage
       ? tiposDeComprobanteStorage
@@ -45,6 +47,10 @@ export const auxiliares = {
     setDistritos(state, payload) {
       state.distritos = payload;
       localStorage.setItem("distritos", JSON.stringify(payload));
+    },
+    setZonaCobertura(state, payload) {
+      state.zonaCobertura = payload;
+      localStorage.setItem("zonaCobertura", JSON.stringify(payload));
     },
     setTiposCarga(state, payload) {
       state.tiposDeCarga = payload;
@@ -96,6 +102,14 @@ export const auxiliares = {
       try {
         const response = await AuxiliarService.getDistritos();
         commit("setDistritos", response.data);
+      } catch (error) {
+        console.error(error);
+      }
+    },
+    async getZonaCobertura({ commit }) {
+      try {
+        const response = await AuxiliarService.getZonaCobertura();
+        commit("setZonaCobertura", response.data);
       } catch (error) {
         console.error(error);
       }

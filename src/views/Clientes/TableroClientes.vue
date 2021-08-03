@@ -79,8 +79,11 @@
       </div>
 
       <div class="overflow-y-auto bg-white border border-black max-h-96">
+        <Loading v-if="loading" />
+
         <div
-          class="grid items-center h-24 grid-cols-4 py-2 overflow-hidden text-sm text-center border-b-2 cursor-default hover:bg-info border-primary"
+          v-else
+          class="grid items-center h-24 grid-cols-4 py-2 overflow-hidden text-xs text-center border-b-2 cursor-default hover:bg-info border-primary"
           :class="{
             'bg-info text-white font-bold': cliente.id == currentIndex,
           }"
@@ -111,7 +114,7 @@
               class="cursor-pointer"
             >
               <font-awesome-icon
-                class="text-2xl text-primary"
+                class="text-xl text-primary"
                 icon="pencil-alt"
                 @click="navigate"
                 role="link"
@@ -145,6 +148,7 @@ import ClienteService from "@/services/cliente.service";
 import ClienteDetalles from "@/components/ClienteDetalles.vue";
 import BaseBiciEnvios from "@/components/BaseBiciEnvios.vue";
 import BaseEcoamigable from "@/components/BaseEcoamigable.vue";
+import Loading from "@/components/Loading";
 import { mapState, mapActions } from "vuex";
 
 const tabNames = {
@@ -169,12 +173,14 @@ export default {
         [tabNames.ecoamigable]: BaseEcoamigable,
       },
       activeTabName: null,
+      loading: false,
     };
   },
   components: {
     ClienteDetalles,
     BaseBiciEnvios,
     BaseEcoamigable,
+    Loading,
   },
   computed: {
     ...mapState("clientes", ["clientes"]),
@@ -185,18 +191,15 @@ export default {
   methods: {
     ...mapActions("clientes", ["getClientes"]),
 
-    retrievePedidosCliente(id) {
-      ClienteService.getPedidosDelClienteById(id).then(
-        (response) => {
-          this.pedidosCliente = response.data;
-        },
-        (error) => {
-          this.pedidosCliente =
-            (error.response && error.response.data) ||
-            error.message ||
-            error.toString();
-        }
-      );
+    async retrievePedidosCliente(id) {
+      try {
+        const response = await ClienteService.getPedidosDelClienteById(id);
+        this.pedidosCliente = response.data;
+      } catch (error) {
+        console.error(
+          `Error al traer los pedidos del Cliente: ${error.message}`
+        );
+      }
     },
 
     handleTabClick(tabName) {
@@ -204,13 +207,19 @@ export default {
       this.currentTab = this.tabs[tabName];
     },
 
-    refreshList() {
-      this.getClientes();
-      this.clientesFiltrados = this.clientes;
+    async refreshList() {
+      try {
+        this.loading = true;
+        await this.getClientes();
+        this.clientesFiltrados = this.clientes;
 
-      this.currentCliente = null;
-      this.currentIndex = -1;
-      this.buscador = "";
+        this.currentCliente = null;
+        this.currentIndex = -1;
+        this.buscador = "";
+        this.loading = false;
+      } catch (error) {
+        console.error(`Error al refrescar la lista: ${error.message}`);
+      }
     },
 
     setActiveCliente(cliente, index) {
@@ -222,6 +231,7 @@ export default {
 
     async searchCliente() {
       try {
+        this.loading = true;
         this.clientesFiltrados = await ClienteService.searchCliente(
           this.buscador
         );
@@ -229,6 +239,7 @@ export default {
         if (this.buscador.trim() === "") {
           this.refreshList();
         }
+        this.loading = false;
       } catch (error) {
         console.error(`Error en el buscador de Clientes: ${error.message}`);
       }

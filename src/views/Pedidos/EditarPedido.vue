@@ -27,6 +27,8 @@
         </button>
       </div>
 
+      <div class="overlay" v-if="showBuscador || showBuscadorDestinos"></div>
+
       <BuscadorCliente
         :showBuscador="showBuscador"
         @cerrarBuscador="showBuscador = false"
@@ -155,7 +157,7 @@
 
           <div class="col-span-2 ">
             <label for="direccionRemitente" class="label-input"
-              >Direccion</label
+              >Dirección</label
             >
             <input
               v-model="editarPedido.direccionRemitente"
@@ -225,6 +227,7 @@
             <input
               v-model.number="editarPedido.tarifa"
               type="number"
+              min="0"
               v-validate="'required'"
               name="tarifa"
               class="input"
@@ -485,6 +488,7 @@
             <input
               v-model.number="editarPedido.recaudo"
               type="number"
+              min="0"
               class="input"
             />
           </div>
@@ -494,6 +498,7 @@
             <input
               v-model.number="editarPedido.tramite"
               type="number"
+              min="0"
               class="input"
             />
           </div>
@@ -561,11 +566,13 @@ export default {
       errorCalcularDistancia: false,
       es: es,
       tarifaMemoria: 0,
+      tarifaSugeridaMemoria: 0,
+      distanciaMemoria: 0,
     };
   },
   async mounted() {
     try {
-      this.getPedido(this.$route.params.id);
+      await this.getPedido(this.$route.params.id);
 
       this.mobikersFiltrados = this.mobikers.filter(
         (mobiker) => mobiker.status === "Activo"
@@ -591,8 +598,6 @@ export default {
     "editarPedido.mobiker": async function() {
       if (this.editarPedido.mobiker.fullName === "Asignar MoBiker") {
         this.editarPedido.statusId = 1;
-      } else {
-        this.editarPedido.statusId = 2;
       }
 
       if (this.editarPedido.mobiker.fullName) {
@@ -601,7 +606,7 @@ export default {
         );
         this.editarPedido.comision =
           this.editarPedido.tarifa !== 0
-            ? (this.editarPedido.tarifa * comision).toFixed(2)
+            ? +(this.editarPedido.tarifa * comision).toFixed(2)
             : 0;
       }
     },
@@ -619,7 +624,7 @@ export default {
         );
         this.editarPedido.comision =
           this.editarPedido.tarifa !== 0
-            ? (this.editarPedido.tarifa * comision).toFixed(2)
+            ? +(this.editarPedido.tarifa * comision).toFixed(2)
             : 0;
       }
     },
@@ -634,18 +639,20 @@ export default {
     },
 
     "editarPedido.modalidad": function() {
-      if (this.editarPedido.modalidad === "Con Retorno") {
+      console.log(this.editarPedido.modalidad);
+      if (this.editarPedido.modalidad.tipo === "Con Retorno") {
         this.editarPedido.viajes = 2;
+        this.editarPedido.distancia *= 2;
         if (this.editarPedido.tipoEnvio === "E-Commerce") {
           this.editarPedido.tarifa = this.tarifaMemoria * 2;
         } else {
           this.editarPedido.tarifa += +Math.ceil(this.tarifaMemoria / 2);
         }
       }
-      if (this.editarPedido.modalidad === "Una vía") {
+      if (this.editarPedido.modalidad.tipo === "Una vía") {
         this.editarPedido.viajes = 1;
         this.editarPedido.tarifa = this.tarifaMemoria;
-        console.log(this.tarifaMemoria);
+        this.editarPedido.distancia = this.distanciaMemoria;
       }
     },
   },
@@ -660,7 +667,13 @@ export default {
         this.editarPedido.distritoConsignado = response.data.distrito.distrito;
         this.editarPedido.tipoEnvio = response.data.tipoDeEnvio.tipo;
         this.tarifaMemoria = this.editarPedido.tarifa;
-        console.log(this.editarPedido.fecha);
+        this.tarifaSugeridaMemoria = this.editarPedido.tarifaSugerida;
+        this.distanciaMemoria = this.editarPedido.distancia;
+
+        // Acomodando Fechas
+        this.editarPedido.fecha = new Date(
+          new Date(this.editarPedido.fecha).getTime() + 1000 * 60 * 60 * 5
+        );
       } catch (error) {
         console.error("Mensaje de error:", error);
       }
@@ -718,6 +731,13 @@ export default {
           this.editarPedido.distritoConsignado
         );
 
+        this.distanciaMemoria = this.editarPedido.distancia;
+        if (this.editarPedido.modalidad === "Con Retorno") {
+          this.editarPedido.distancia = this.distanciaMemoria * 2;
+        } else {
+          this.editarPedido.distancia = this.distanciaMemoria;
+        }
+
         if (
           this.editarPedido.distancia === null ||
           this.editarPedido.distancia === undefined ||
@@ -735,12 +755,15 @@ export default {
         // Calcular la tarifa
         const response = calcularTarifa(
           this.editarPedido.distancia,
-          this.editarPedido.tipoEnvio
+          this.editarPedido.tipoEnvio,
+          this.editarPedido.modalidad,
+          this.editarPedido.distritoConsignado
         );
 
         this.editarPedido.tarifa = response.tarifa;
         this.tarifaMemoria = response.tarifa;
         this.editarPedido.tarifaSugerida = response.tarifaSugerida;
+        this.tarifaSugeridaMemoria = response.tarifaSugerida;
 
         // Calcular las estadísticas Ecoamigables
         const stats = calcularEstadisticas(this.editarPedido.distancia);

@@ -1,7 +1,7 @@
 <template>
   <div
     v-if="showBuscador"
-    class="absolute z-40 w-1/2 p-8 py-10 transform -translate-x-1/2 -translate-y-1/2 shadow-xl bg-primary top-1/2 left-1/2 rounded-xl"
+    class="absolute z-40 w-1/2 p-8 py-10 transform -translate-x-1/2 shadow-xl bg-primary top-12 left-1/2 rounded-xl"
   >
     <div class="absolute -top-4 -right-2">
       <button

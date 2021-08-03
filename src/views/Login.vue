@@ -111,8 +111,8 @@ export default {
           }, 1500);
         }
       } catch (error) {
-        console.log(`Error al iniciar sesión: ${error.response.data.message}`);
-        this.alert.message = error.response.data.message;
+        console.log(`Error al iniciar sesión: ${error.message}`);
+        this.alert.message = "No se pudo iniciar sesión";
         this.alert.show = true;
         this.alert.success = false;
         setTimeout(() => (this.alert.show = false), 2500);
@@ -123,6 +123,7 @@ export default {
       try {
         await this.$store.dispatch("auxiliares/getRolesUsuarios");
         await this.$store.dispatch("auxiliares/getDistritosLima");
+        await this.$store.dispatch("auxiliares/getZonaCobertura");
         await this.$store.dispatch("auxiliares/getTiposCarga");
         await this.$store.dispatch("auxiliares/getComprobantes");
         await this.$store.dispatch("auxiliares/getTiposEnvios");

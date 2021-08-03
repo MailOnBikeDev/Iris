@@ -5,7 +5,7 @@
     >
       <form
         class="flex flex-col mt-4"
-        @submit.prevent="handleRegister"
+        @submit.prevent="handleEdit"
         autocomplete="off"
       >
         <div class="flex flex-row">
@@ -78,23 +78,6 @@
           </div>
         </div>
 
-        <div class="mb-4 rounded">
-          <label for="password" class="label-input">Password</label>
-          <input
-            v-model="user.password"
-            v-validate="'required|min:6|max:40'"
-            type="password"
-            class="input"
-            name="password"
-          />
-          <div
-            v-if="errors.has('password')"
-            class="p-2 text-sm text-white bg-red-500 rounded"
-          >
-            <p>La contraseña es requerida</p>
-          </div>
-        </div>
-
         <div class="flex flex-row">
           <div class="mx-auto">
             <label for="roles" class="label-input">Seleccione un Rol</label>
@@ -118,12 +101,22 @@
           </div>
         </div>
 
-        <button
-          class="block px-8 py-2 mx-auto my-4 font-bold text-white transition duration-200 rounded shadow-lg bg-info hover:bg-secondary hover:shadow-xl focus:outline-none"
-          type="submit"
-        >
-          Crear Nuevo Usuario
-        </button>
+        <div class="flex flex-row my-6 justify-evenly">
+          <button
+            @click="cancelar"
+            type="button"
+            class="block px-8 py-2 font-bold text-white transition duration-200 bg-red-500 rounded-lg shadow-lg hover:bg-red-700 hover:shadow-xl focus:outline-none"
+          >
+            Cancelar
+          </button>
+
+          <button
+            class="block px-8 py-2 font-bold text-white transition duration-200 rounded-lg shadow-lg bg-info hover:bg-secondary hover:shadow-xl focus:outline-none"
+            type="submit"
+          >
+            Editar Usuario
+          </button>
+        </div>
       </form>
 
       <BaseAlerta v-if="alert.show" :alert="alert" />
@@ -133,12 +126,12 @@
 
 <script>
 import BaseAlerta from "@/components/BaseAlerta.vue";
-import AuthService from "../services/auth.service";
-import User from "../models/user";
+import AuthService from "@/services/auth.service";
+import User from "@/models/user";
 import { mapState } from "vuex";
 
 export default {
-  name: "Register",
+  name: "EditarUser",
   components: { BaseAlerta },
   data() {
     return {
@@ -150,15 +143,29 @@ export default {
       },
     };
   },
+  mounted() {
+    this.getUser(this.$route.params.id);
+  },
   computed: {
     ...mapState("auxiliares", ["rolesUsuarios"]),
-
-    loggedIn() {
-      return this.$store.state.status.loggedIn;
-    },
   },
   methods: {
-    async handleRegister() {
+    async getUser(id) {
+      try {
+        this.user = await AuthService.getUser(id);
+
+        this.user.roles = this.user.roles.map((rol) => rol.name);
+      } catch (error) {
+        console.error(`No se encontró ningún usuario: ${error.message}`);
+      }
+    },
+
+    cancelar() {
+      history.go(-1);
+    },
+
+    async handleEdit() {
+      console.log(this.user);
       try {
         const isValid = await this.$validator.validateAll();
 
@@ -166,14 +173,18 @@ export default {
           return;
         }
 
-        const response = await AuthService.register(this.user);
+        const response = await AuthService.editUser(
+          this.$route.params.id,
+          this.user
+        );
+        console.log(response);
         this.alert.message = response.message;
         this.alert.show = true;
         this.alert.success = true;
 
         setTimeout(() => {
           this.alert.show = false;
-          this.$route.push("/equipo-admin");
+          history.go(-1);
         }, 1500);
       } catch (error) {
         console.log(`Error al crear nuevo usuario: ${error.response.message}`);
@@ -186,39 +197,3 @@ export default {
   },
 };
 </script>
-
-<style lang="scss">
-input[type="checkbox"] {
-  position: relative;
-  width: 2rem;
-  height: 1rem;
-  appearance: none;
-  background: #c6c6c6;
-  outline: none;
-  border-radius: 1rem;
-  box-shadow: inset 0 0 0.5rem rgba(0, 0, 0, 0.2);
-  transition: 0.3s;
-
-  &:checked {
-    background: #6f8fc8;
-  }
-
-  &::before {
-    content: "";
-    position: absolute;
-    width: 1rem;
-    height: 1rem;
-    border-radius: 1rem;
-    top: 0;
-    left: 0;
-    background: #fff;
-    transform: scale(1.1);
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-    transition: 0.3s;
-  }
-
-  &:checked::before {
-    left: 1rem;
-  }
-}
-</style>

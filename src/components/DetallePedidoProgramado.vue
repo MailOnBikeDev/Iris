@@ -1,7 +1,6 @@
 <template>
   <div
-    v-if="showDetalle"
-    class="absolute z-40 w-1/2 h-auto px-10 py-4 transform -translate-x-1/2 -translate-y-1/2 shadow-xl bg-primary top-1/2 left-1/2 rounded-xl"
+    class="absolute z-40 w-1/2 h-auto px-10 py-4 transform -translate-x-1/2 shadow-xl bg-primary top-12 left-1/2 rounded-xl"
   >
     <div class="absolute -top-4 -right-2">
       <button
@@ -13,7 +12,8 @@
     </div>
 
     <div class="hidden" ref="comanda">
-      <MensajeComanda :currentPedido="currentComanda" />
+      <MensajeComandaRuteo v-if="mensajeRuteo" :currentRuta="arrayRuteos" />
+      <MensajeComanda v-else :currentPedido="currentComanda" />
     </div>
 
     <form class="grid grid-cols-2 p-4 bg-white gap-x-4 rounded-t-xl">
@@ -65,7 +65,7 @@
             pedido.id
           ),
         }"
-        v-for="pedido in pedidosArray"
+        v-for="pedido in newArrayPedidos"
         :key="pedido.id"
         @click="seleccionComanda(pedido, pedido.id)"
       >
@@ -121,6 +121,7 @@
 
 <script>
 import MensajeComanda from "./MensajeComanda.vue";
+import MensajeComandaRuteo from "./MensajeComandaRuteo.vue";
 import PedidoService from "@/services/pedido.service";
 import { ModelListSelect } from "vue-search-select";
 import { mapState } from "vuex";
@@ -130,7 +131,6 @@ export default {
   props: {
     showDetalle: {
       type: Boolean,
-      required: true,
     },
     pedidosArray: {
       type: Array,
@@ -139,6 +139,7 @@ export default {
   components: {
     ModelListSelect,
     MensajeComanda,
+    MensajeComandaRuteo,
   },
   data() {
     return {
@@ -152,6 +153,10 @@ export default {
       currentComanda: null,
       currentComandaIdx: -1,
       comandasEnviadas: [],
+      arrayRuteos: [],
+      mobikersFiltrados: [],
+      mensajeRuteo: false,
+      newArrayPedidos: [],
     };
   },
   computed: {
@@ -162,6 +167,8 @@ export default {
     this.mobikersFiltrados = this.mobikers.filter(
       (mobiker) => mobiker.status === "Activo"
     );
+
+    this.newArrayPedidos = this.pedidosArray;
   },
   watch: {
     "pedidoAsignado.mobiker": function() {
@@ -176,32 +183,39 @@ export default {
         this.pedidoAsignado.mobiker = "Asignar MoBiker";
       }
     },
-    showDetalle: function() {
-      if (this.showDetalle && this.pedidosArray.length === 1) {
-        this.pedidoAsignado.mobiker = this.pedidosArray[0].mobiker.fullName;
+    newArrayPedidos: function() {
+      if (this.newArrayPedidos.length === 1) {
+        this.pedidoAsignado.mobiker = this.newArrayPedidos[0].mobiker.fullName;
+      }
+      if (
+        this.newArrayPedidos.length > 1 &&
+        this.newArrayPedidos[0].mobiker.fullName ===
+          this.newArrayPedidos[1].mobiker.fullName
+      ) {
+        this.pedidoAsignado.mobiker = this.newArrayPedidos[0].mobiker.fullName;
       }
     },
   },
   methods: {
-    handleAsignarPedido() {
+    async handleAsignarPedido() {
       try {
         const mobikerAsignado = this.mobikers.filter(
           (mobiker) => mobiker.fullName === this.pedidoAsignado.mobiker
         );
 
-        this.pedidosArray.forEach(async (pedido) => {
+        const newArray = [];
+
+        for (let pedido of this.newArrayPedidos) {
           this.pedidoAsignado.comision = +(
-            parseFloat(pedido.tarifa) *
-            parseFloat(mobikerAsignado[0].rango.comision)
+            +pedido.tarifa * +mobikerAsignado[0].rango.comision
           ).toFixed(2);
 
-          console.log(this.pedidoAsignado);
           const response = await PedidoService.asignarPedido(
             pedido.id,
             this.pedidoAsignado
           );
-
           console.log(`Respuesta de la asignación: ${response.data.message}`);
+          newArray.push(response.data.sendPedido);
 
           if (
             this.pedidoAsignado.statusId !== 1 &&
@@ -211,7 +225,13 @@ export default {
           } else {
             this.statusAsignado = false;
           }
-        });
+        }
+        this.newArrayPedidos = newArray;
+        this.comandasEnviadas = [];
+
+        this.currentComanda = null;
+        this.currentComandaIdx = -1;
+        this.comandaCopiada = false;
       } catch (error) {
         console.error(`Error al asignar Pedidos: ${error.message}`);
       }
@@ -221,25 +241,37 @@ export default {
       this.currentComanda = comanda;
       this.currentComandaIdx = index;
       this.comandaCopiada = false;
+
+      if (comanda.isRuteo) {
+        this.arrayRuteos = this.newArrayPedidos.filter(
+          (pedido) => comanda.ruteoId === pedido.ruteoId
+        );
+        this.mensajeRuteo = true;
+      }
     },
 
     copiarComanda() {
-      console.log(this.$refs.comanda.innerText);
       this.$copyText(this.$refs.comanda.innerText).then(() => {
         this.comandaCopiada = true;
         console.log("Texto copiado");
-        this.comandasEnviadas.push(this.currentComandaIdx);
+        if (this.mensajeRuteo) {
+          let ruteos = this.arrayRuteos.map((pedido) => pedido.id);
+          this.comandasEnviadas = [...this.comandasEnviadas, ...ruteos];
+        } else {
+          this.comandasEnviadas.push(this.currentComandaIdx);
+        }
       });
     },
 
     cerrarDetalle() {
-      this.$emit("cerrarDetalle");
       this.comandaCopiada = false;
       this.statusAsignado = false;
       this.pedidoAsignado.statusId = 1;
-      this.comandasEnviadas.length = 0;
+      this.comandasEnviadas = [];
       this.pedidoAsignado.mobiker = "Asignar MoBiker";
+      this.newArrayPedidos = [];
 
+      this.$emit("cerrarDetalle");
       this.refresh();
     },
 

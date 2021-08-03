@@ -44,22 +44,17 @@
           :monday-first="true"
           :language="es"
           format="dd MMM"
+          @input="buscarPorFecha"
         />
         <datepicker
           v-model="fechaFin"
           name="fechaFin"
-          input-class="w-24 p-2 font-bold text-center cursor-pointer focus:outline-none text-primary"
+          input-class="w-24 p-2 font-bold text-center cursor-pointer rounded-r-xl focus:outline-none text-primary"
           :monday-first="true"
           :language="es"
           format="dd MMM"
+          @input="buscarPorFecha"
         />
-        <button
-          type="button"
-          class="px-2 py-1 mb-1 font-bold bg-white rounded-r-xl hover:bg-info hover:text-white focus:outline-none text-secondary"
-          @click="buscarPorFecha"
-        >
-          Buscar
-        </button>
       </div>
 
       <router-link
@@ -81,8 +76,9 @@
       </button>
 
       <button
-        class="px-6 py-2 font-bold text-white bg-green-600 rounded-xl focus:outline-none hover:bg-green-500"
+        class="px-6 py-2 font-bold text-white bg-green-600 rounded-xl focus:outline-none hover:bg-green-500 disabled:bg-green-900"
         @click="openDetalle"
+        :disabled="!currentCliente"
       >
         Enviar reporte
       </button>
@@ -97,7 +93,7 @@
       </div>
 
       <div
-        class="inline-grid items-center grid-cols-6 col-span-3 text-sm font-bold text-center text-primary"
+        class="inline-grid items-center grid-cols-7 col-span-3 mr-2 text-sm font-bold text-center text-primary"
       >
         <button @click="sortPorId" class="focus:outline-none">
           <p class="font-bold"># Pedido</p>
@@ -114,6 +110,9 @@
         <button @click="sortPorEstado" class="focus:outline-none">
           <p class="font-bold">Estado</p>
         </button>
+        <div>
+          <p class="font-bold">Forma de Pago</p>
+        </div>
         <button @click="sortPorFecha" class="focus:outline-none">
           <p class="font-bold">Fecha</p>
         </button>
@@ -121,17 +120,11 @@
       <div
         class="overflow-y-auto bg-white border border-black max-h-96 h-96 pedidos-scroll"
       >
-        <div v-if="loading" class="text-center mt-36">
-          <font-awesome-icon
-            size="5x"
-            class="animate-spin text-primary"
-            icon="spinner"
-          />
-        </div>
+        <Loading v-if="loading" />
 
         <div
           v-else
-          class="grid items-center grid-cols-3 px-2 text-sm text-center border-b-2 cursor-pointer h-14 border-primary hover:bg-info hover:text-white"
+          class="grid items-center grid-cols-3 px-2 text-xs text-center border-b-2 cursor-pointer h-14 border-primary hover:bg-info hover:text-white"
           :class="{
             'bg-info text-white font-bold': cliente.cliente.id == currentIndex,
           }"
@@ -152,40 +145,43 @@
       <div
         class="col-span-3 overflow-y-auto bg-white border border-black pedidos-scroll max-h-96"
       >
+        <Loading v-if="loading" />
+
         <div
-          class="grid items-center grid-cols-6 py-2 text-sm text-center border-b-2 cursor-pointer gap-x-1 h-14 border-primary hover:bg-info"
+          v-else
+          class="grid items-center h-auto grid-cols-7 py-2 text-xs text-center border-b-2 cursor-pointer gap-x-1 border-primary hover:bg-info"
           :class="{
             'bg-info text-white font-bold': pedido.id == currentPedidoIndex,
           }"
           v-for="pedido in pedidosCliente"
           :key="pedido.id"
+          @click="setActivePedido(pedido, pedido.id)"
         >
-          <div @click="setActivePedido(pedido, pedido.id)">
+          <div>
             <p>{{ pedido.id }}</p>
           </div>
 
-          <div @click="setActivePedido(pedido, pedido.id)">
-            <p v-if="pedido.rolCliente === 'Remitente'">
+          <div>
+            <p>
               {{ pedido.empresaRemitente }}
             </p>
-            <p v-else>{{ pedido.empresaConsignado }}</p>
           </div>
 
-          <div @click="setActivePedido(pedido, pedido.id)">
+          <div>
             <p v-if="pedido.rolCliente === 'Remitente'">
               {{ pedido.distritoRemitente }}
             </p>
             <p v-else>{{ pedido.distrito.distrito }}</p>
           </div>
 
-          <div @click="setActivePedido(pedido, pedido.id)">
+          <div>
             <p v-if="pedido.rolCliente === 'Remitente'">
               {{ pedido.distrito.distrito }}
             </p>
             <p v-else>{{ pedido.distritoRemitente }}</p>
           </div>
 
-          <div @click="setActivePedido(pedido, pedido.id)">
+          <div>
             <p v-if="pedido.status.id === 1" class="tag-programado">
               {{ pedido.status.tag }}
             </p>
@@ -206,7 +202,11 @@
             </p>
           </div>
 
-          <div @click="setActivePedido(pedido, pedido.id)">
+          <div>
+            <p>{{ pedido.formaPago }}</p>
+          </div>
+
+          <div>
             <p>{{ $date(pedido.fecha).format("DD MMM YYYY") }}</p>
           </div>
         </div>
@@ -233,6 +233,7 @@
 <script>
 import DetallePedidoComisiones from "@/components/DetallePedidoComisiones";
 import ReporteFacturacion from "@/components/ReporteFacturacion";
+import Loading from "@/components/Loading";
 import ClienteService from "@/services/cliente.service";
 import Datepicker from "vuejs-datepicker";
 import Pagination from "@/components/Pagination.vue";
@@ -247,6 +248,7 @@ export default {
     Pagination,
     DetallePedidoComisiones,
     ReporteFacturacion,
+    Loading,
   },
   data() {
     return {
@@ -273,6 +275,9 @@ export default {
       pageSize: 200,
       es: es,
     };
+  },
+  mounted() {
+    this.retrieveClientesConPedidos();
   },
   methods: {
     getRequestParams(desde, hasta, id, page, pageSize) {
@@ -301,36 +306,34 @@ export default {
       return params;
     },
 
-    retrievePedidosClientes() {
-      const params = this.getRequestParams(
-        this.fechaInicio.toISOString().split("T")[0],
-        this.fechaFin.toISOString().split("T")[0],
-        this.currentIndex,
-        this.page,
-        this.pageSize
-      );
+    async retrievePedidosClientes() {
+      try {
+        const params = this.getRequestParams(
+          this.$date(this.fechaInicio).format("YYYY-MM-DD"),
+          this.$date(this.fechaFin).format("YYYY-MM-DD"),
+          this.currentIndex,
+          this.page,
+          this.pageSize
+        );
 
-      ClienteService.getPedidosDelCliente(params).then(
-        (response) => {
-          const { pedidos, totalPedidos } = response.data;
-          this.pedidosCliente = pedidos; // rows
-          this.cantidadPedidos = totalPedidos; // count
-        },
-        (error) => {
-          this.pedidosMobiker =
-            (error.response && error.response.data) ||
-            error.message ||
-            error.toString();
-        }
-      );
+        const response = await ClienteService.getPedidosDelCliente(params);
+
+        const { pedidos, totalPedidos } = response.data;
+        this.pedidosCliente = pedidos; // rows
+        this.cantidadPedidos = totalPedidos; // count
+      } catch (error) {
+        console.error(
+          `Error al obtener los Pedidos del Cliente: ${error.message}`
+        );
+      }
     },
 
     async retrieveClientesConPedidos() {
       try {
         this.loading = true;
         const params = {
-          desde: this.fechaInicio.toISOString().split("T")[0],
-          hasta: this.fechaFin.toISOString().split("T")[0],
+          desde: this.$date(this.fechaInicio).format("YYYY-MM-DD"),
+          hasta: this.$date(this.fechaFin).format("YYYY-MM-DD"),
         };
 
         const response = await ClienteService.getClientesConPedidos(params);
@@ -362,9 +365,6 @@ export default {
 
       this.clientesFiltrados = this.clientes;
 
-      this.fechaInicio = new Date(seisDiasAtras);
-      this.fechaFin = new Date();
-
       this.currentCliente = null;
       this.currentIndex = -1;
       this.buscador = "";
@@ -394,9 +394,15 @@ export default {
       this.pagosPorCobrar = this.pedidosCliente.filter(
         (detalle) =>
           detalle.formaPago !== "Efectivo en Origen" &&
-          detalle.formaPago !== "Efectivo en Destino"
+          detalle.formaPago !== "Efectivo en Destino" &&
+          detalle.formaPago !== "Sin Cargo x Canje" &&
+          detalle.formaPago !== "Sin Cargo x Compensación" &&
+          detalle.formaPago !== "Sin Cargo x Cortesía" &&
+          detalle.formaPago !== "Sin Cargo x Envío Propio" &&
+          detalle.formaPago !== "Sin Cargo x Error MoB"
       );
       if (
+        this.pagosPorCobrar[0] &&
         this.pagosPorCobrar[0].empresaRemitente === "PHILIP MORRIS PERU S.A."
       ) {
         this.casoEspecial = true;
@@ -408,8 +414,13 @@ export default {
     filtroEfectivo() {
       this.pagosEfectivo = this.pedidosCliente.filter(
         (detalle) =>
-          detalle.formaPago === "Efectivo en Origen" ||
-          detalle.formaPago === "Efectivo en Destino"
+          (detalle.formaPago === "Efectivo en Origen" ||
+            detalle.formaPago === "Efectivo en Destino") &&
+          detalle.formaPago !== "Sin Cargo x Canje" &&
+          detalle.formaPago !== "Sin Cargo x Compensación" &&
+          detalle.formaPago !== "Sin Cargo x Cortesía" &&
+          detalle.formaPago !== "Sin Cargo x Envío Propio" &&
+          detalle.formaPago !== "Sin Cargo x Error MoB"
       );
     },
 
@@ -417,6 +428,7 @@ export default {
       this.retrieveClientesConPedidos();
       this.currentCliente = null;
       this.currentIndex = -1;
+      this.pedidosCliente = [];
     },
 
     async searchCliente() {

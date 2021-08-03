@@ -1,7 +1,7 @@
 <template>
   <div
     v-if="showCambiarStatus"
-    class="absolute z-40 w-1/3 h-auto px-10 py-4 transform -translate-x-1/2 -translate-y-1/2 shadow-xl bg-primary top-1/2 left-1/2 rounded-xl"
+    class="absolute z-40 w-1/3 h-auto px-10 py-4 transform -translate-x-1/2 shadow-xl bg-primary top-12 left-1/2 rounded-xl"
   >
     <div class="absolute -top-4 -right-2">
       <button
@@ -108,17 +108,17 @@ export default {
     async handleCambiarStatusPedido() {
       try {
         const pedidoCambiado = {
-          statusId: this.currentPedido.statusId,
+          status: this.currentPedido.statusId,
           mobiker: this.currentPedido.mobiker.fullName,
           comentario: this.currentPedido.comentario,
+          isRuteo: this.currentPedido.isRuteo,
+          ruteoId: this.currentPedido.ruteoId,
         };
 
-        const response = await PedidoService.cambiarEstadoPedido(
+        await PedidoService.cambiarEstadoPedido(
           this.currentPedido.id,
           pedidoCambiado
         );
-
-        console.log(response.data.message);
 
         if (this.currentPedido.statusId !== 1) {
           this.statusAsignado = true;
@@ -134,8 +134,6 @@ export default {
 
     cerrarModal() {
       this.$emit("cerrarModal");
-
-      this.$emit("refresh");
     },
   },
 };

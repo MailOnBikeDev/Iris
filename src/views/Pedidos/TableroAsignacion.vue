@@ -8,9 +8,10 @@
       </h1>
     </div>
 
-    <div class="overlay" v-if="showDetalle || showResumen"></div>
+    <div class="overlay" v-if="showDetalle || showResumen || showRuteo"></div>
 
     <DetallePedidoProgramado
+      v-if="showDetalle"
       :showDetalle="showDetalle"
       @cerrarDetalle="closeModal"
       @refresh="refreshList"
@@ -18,13 +19,21 @@
     />
 
     <ResumenPedido
+      v-if="currentPedido"
       :showResumen="showResumen"
       @cerrarResumen="closeResumen"
       @marcarAsignar="marcarAsignar"
       :currentPedido="currentPedido"
     />
 
-    <div class="flex flex-row mb-4 -mt-10 justify-evenly">
+    <DetalleRuteo
+      v-if="showRuteo"
+      :currentRuta="currentRuta"
+      @cerrarResumen="closeResumen"
+      @asignarRuteo="marcarRuteo"
+    />
+
+    <div class="flex flex-row items-center mb-4 -mt-10 justify-evenly">
       <div class="flex flex-row">
         <datepicker
           v-model="fechaInicio"
@@ -33,22 +42,17 @@
           :monday-first="true"
           :language="es"
           format="dd MMM"
+          @input="getPedidosAsignar"
         />
         <datepicker
           v-model="fechaFin"
           name="fechaFin"
-          input-class="w-20 p-2 mb-1 font-bold text-center cursor-pointer focus:outline-none text-primary"
+          input-class="w-20 p-2 mb-1 font-bold text-center cursor-pointer rounded-r-xl focus:outline-none text-primary"
           :monday-first="true"
           :language="es"
           format="dd MMM"
+          @input="getPedidosAsignar"
         />
-        <button
-          type="button"
-          class="px-2 py-1 mb-1 font-bold bg-white rounded-r-xl hover:bg-info hover:text-white focus:outline-none text-secondary"
-          @click="retrievePedidos"
-        >
-          Buscar
-        </button>
       </div>
 
       <div>
@@ -72,7 +76,7 @@
         >
       </router-link>
 
-      <button class="refresh-btn" @click="refreshList">
+      <button class="h-10 refresh-btn" @click="refreshList">
         <font-awesome-icon
           class="text-white group-hover:animate-spin"
           icon="sync-alt"
@@ -86,9 +90,14 @@
       >
         Asignar
       </button>
+
+      <div class="flex flex-col items-center justify-center ">
+        <label for="ruteos" class="resalta">Ruteos</label>
+        <input id="ruteos" type="checkbox" v-model="ruteos" />
+      </div>
     </div>
 
-    <div class="grid grid-cols-4 gap-2">
+    <div class="grid grid-cols-5 gap-2">
       <div class="flex flex-row justify-center">
         <p v-if="pedidos">
           <span class="resalta">Pedidos por asignar:</span>
@@ -97,14 +106,35 @@
       </div>
 
       <div
-        class="inline-grid items-center grid-cols-8 col-span-3 text-sm font-bold text-center text-primary"
+        v-if="ruteos"
+        class="inline-grid items-center grid-cols-8 col-span-4 text-sm font-bold text-center text-primary"
+      >
+        <p class="font-bold">Pedidos</p>
+        <p class="font-bold">Cliente</p>
+        <p class="font-bold">Origen</p>
+        <p class="font-bold">MoBiker</p>
+        <p class="font-bold">Estado</p>
+        <p class="font-bold">Observaciones</p>
+        <p class="font-bold">Fecha</p>
+        <p class="font-bold">Asignar</p>
+      </div>
+
+      <div
+        v-else
+        class="inline-grid items-center grid-cols-10 col-span-4 text-sm font-bold text-center text-primary"
       >
         <button @click="sortPorId" class="focus:outline-none">
           <p class="font-bold"># Pedido</p>
         </button>
+        <div>
+          <p class="font-bold">Cliente</p>
+        </div>
         <button @click="sortPorOrigen" class="focus:outline-none">
           <p class="font-bold">Origen</p>
         </button>
+        <div>
+          <p class="font-bold">Consignado</p>
+        </div>
         <button @click="sortPorDestino" class="focus:outline-none">
           <p class="font-bold">Destino</p>
         </button>
@@ -127,39 +157,113 @@
       <div
         class="overflow-y-auto bg-white border border-black max-h-96 h-96 pedidos-scroll"
       >
-        <!-- v-click-outside="clickExterno" -->
+        <Loading v-if="loading" />
         <div
+          v-else
           class="grid items-center grid-cols-3 px-2 text-sm text-center border-b-2 cursor-pointer gap-x-1 h-14 border-primary hover:bg-info"
           :class="{
-            'bg-info text-white font-bold': mobiker.id == currentIndexMobiker,
+            'bg-info text-white font-bold':
+              mobiker.mobiker.id == currentIndexMobiker,
           }"
           v-for="mobiker in mobikersFiltrados"
           :title="
-            `Bicicleta: ${mobiker.tipoBicicleta} - Equipo: ${mobiker.equipo}`
+            `Dirección: ${mobiker.mobiker.direccion}, Distrito: ${mobiker.mobiker.distrito.distrito}
+            Bicicleta: ${mobiker.mobiker.tipoBicicleta} - Equipo: ${mobiker.mobiker.equipo}`
           "
           :key="mobiker.id"
-          @click="checkPedidosMobikers(mobiker, mobiker.id)"
+          @click="checkPedidosMobikers(mobiker.mobiker, mobiker.mobiker.id)"
         >
           <div class="col-span-2">
-            {{ mobiker.fullName }}
+            {{ mobiker.mobiker.fullName }}
           </div>
 
           <div>
-            {{
-              pedidosMobiker.filter(
-                (pedido) =>
-                  pedido.mobikerId === mobiker.id && pedido.statusId !== 6
-              ).length
-            }}
+            {{ mobiker.cantidadPedidos }}
           </div>
         </div>
       </div>
 
       <div
-        class="col-span-3 overflow-y-auto bg-white border border-black pedidos-scroll max-h-96"
+        v-if="ruteos"
+        class="col-span-4 overflow-y-auto bg-white border border-black pedidos-scroll max-h-96"
       >
+        <Loading v-if="loading" />
         <div
-          class="grid items-center grid-cols-8 py-2 text-sm text-center border-b-2 cursor-pointer gap-x-1 h-14 border-primary hover:bg-info"
+          v-else
+          class="grid items-center grid-cols-8 py-2 text-xs text-center border-b-2 cursor-pointer gap-x-1 h-14 border-primary hover:bg-info"
+          :class="{
+            'bg-info text-white font-bold': ruta.ruta.id == currentRutaIndex,
+          }"
+          v-for="ruta in ruteosFiltrados"
+          :key="ruta.ruta.id"
+        >
+          <p @click="setActiveRuteo(ruta, ruta.ruta.id)">
+            {{ ruta.pedidosRuta.length }}
+          </p>
+
+          <p @click="setActiveRuteo(ruta, ruta.ruta.id)">
+            {{ ruta.pedidosRuta[0].empresaRemitente }}
+          </p>
+
+          <p @click="setActiveRuteo(ruta, ruta.ruta.id)">
+            {{ ruta.pedidosRuta[0].distritoRemitente }}
+          </p>
+
+          <p @click="setActiveRuteo(ruta, ruta.ruta.id)">
+            {{ ruta.pedidosRuta[0].mobiker.fullName }}
+          </p>
+
+          <div @click="setActiveRuteo(ruta, ruta.ruta.id)">
+            <p
+              v-if="ruta.pedidosRuta[0].status.id === 1"
+              class="tag-programado"
+            >
+              {{ ruta.pedidosRuta[0].status.tag }}
+            </p>
+            <p v-if="ruta.pedidosRuta[0].status.id === 2" class="tag-recoger">
+              {{ ruta.pedidosRuta[0].status.tag }}
+            </p>
+          </div>
+
+          <div @click="setActiveRuteo(ruta, ruta.ruta.id)">
+            <font-awesome-icon
+              v-if="
+                ruta.pedidosRuta[0].otroDatoRemitente ||
+                  ruta.pedidosRuta[0].otroDatoConsignado
+              "
+              class="text-2xl font-bold text-red-500"
+              icon="eye"
+            />
+
+            <p v-else></p>
+          </div>
+
+          <p @click="setActiveRuteo(ruta, ruta.ruta.id)">
+            {{ $date(ruta.pedidosRuta[0].fecha).format("DD MMM YYYY") }}
+          </p>
+
+          <button
+            @click="assignRuta(ruta.pedidosRuta)"
+            class="focus:outline-none text-primary"
+          >
+            <font-awesome-icon
+              v-if="!pedidosArray.includes(ruta.pedidosRuta[0])"
+              class="text-2xl text-gray-400"
+              icon="check-circle"
+            />
+            <font-awesome-icon v-else class="text-2xl" icon="check-circle" />
+          </button>
+        </div>
+      </div>
+
+      <div
+        v-else
+        class="col-span-4 overflow-y-auto bg-white border border-black pedidos-scroll max-h-96"
+      >
+        <Loading v-if="loading" />
+        <div
+          v-else
+          class="grid items-center grid-cols-10 py-2 text-xs text-center border-b-2 cursor-pointer gap-x-1 h-14 border-primary hover:bg-info"
           :class="{
             'bg-info text-white font-bold': pedido.id == currentIndex,
           }"
@@ -172,10 +276,18 @@
           </div>
 
           <div @click="setActivePedido(pedido, pedido.id)">
+            <p>{{ pedido.empresaRemitente }}</p>
+          </div>
+
+          <div @click="setActivePedido(pedido, pedido.id)">
             <p v-if="pedido.rolCliente === 'Remitente'">
               {{ pedido.distritoRemitente }}
             </p>
             <p v-else>{{ pedido.distrito.distrito }}</p>
+          </div>
+
+          <div @click="setActivePedido(pedido, pedido.id)">
+            <p>{{ pedido.contactoConsignado }}</p>
           </div>
 
           <div @click="setActivePedido(pedido, pedido.id)">
@@ -212,9 +324,17 @@
             <p>{{ $date(pedido.fecha).format("DD MMM YYYY") }}</p>
           </div>
 
-          <div class="flex justify-center">
-            <input type="checkbox" v-model="pedidosArray" :value="pedido" />
-          </div>
+          <button
+            @click="assignPedido(pedido)"
+            class="focus:outline-none text-primary"
+          >
+            <font-awesome-icon
+              v-if="!pedidosArray.includes(pedido)"
+              class="text-2xl text-gray-400"
+              icon="check-circle"
+            />
+            <font-awesome-icon v-else class="text-2xl" icon="check-circle" />
+          </button>
         </div>
       </div>
     </div>
@@ -238,11 +358,13 @@
 
 <script>
 import PedidoService from "@/services/pedido.service";
+import MobikerService from "@/services/mobiker.service";
 import DetallePedidoProgramado from "@/components/DetallePedidoProgramado.vue";
 import ResumenPedido from "@/components/ResumenPedido.vue";
+import DetalleRuteo from "@/components/DetalleRuteo.vue";
 import Datepicker from "vuejs-datepicker";
 import Pagination from "@/components/Pagination.vue";
-import { mapState, mapActions } from "vuex";
+import Loading from "@/components/Loading";
 import { es } from "vuejs-datepicker/dist/locale";
 
 const seisDiasAtras = new Date().getTime() - 1000 * 60 * 60 * 24 * 6;
@@ -255,22 +377,31 @@ export default {
     Datepicker,
     Pagination,
     ResumenPedido,
+    DetalleRuteo,
+    Loading,
   },
   data() {
     return {
       pedidos: [],
       pedidosFiltrados: [],
+      ruteosFiltrados: [],
+      totalRuteos: 0,
       pedidosMobiker: [],
       mobikersFiltrados: [],
       showDetalle: false,
       showResumen: false,
+      showRuteo: false,
       currentIndexMobiker: -1,
       currentPedido: null,
       currentIndex: -1,
+      currentRuta: null,
+      currentRutaIndex: -1,
       fechaInicio: new Date(seisDiasAtras),
       fechaFin: new Date(manana),
       pedidosPorAsignar: 0,
       pedidosArray: [],
+      ruteos: false,
+      loading: false,
 
       buscador: "",
 
@@ -281,11 +412,11 @@ export default {
     };
   },
   mounted() {
-    this.retrieveMobikers();
     this.retrievePedidos();
+    this.retrieveRuteos();
+    this.retrieveMobikers();
   },
   computed: {
-    ...mapState("mobikers", ["mobikers"]),
     emptyArray() {
       if (this.pedidosArray.length === 0) {
         return true;
@@ -295,8 +426,6 @@ export default {
     },
   },
   methods: {
-    ...mapActions("mobikers", ["getMobikers", "buscarMobikers"]),
-
     getRequestParams(desde, hasta, page, pageSize) {
       let params = {};
 
@@ -319,28 +448,45 @@ export default {
       return params;
     },
 
-    retrieveMobikers() {
-      this.mobikersFiltrados = this.mobikers
-        .filter((mobiker) => mobiker.status === "Activo")
-        .sort((a, b) => {
-          return a.fullName > b.fullName ? 1 : -1;
+    async retrieveMobikers() {
+      try {
+        this.loading = true;
+        const params = {
+          desde: this.$date(this.fechaInicio).format("YYYY-MM-DD"),
+          hasta: this.$date(this.fechaFin).format("YYYY-MM-DD"),
+        };
+
+        const response = await MobikerService.getMobikersConPedidos(params);
+        this.mobikersFiltrados = response.data.sort((a, b) => {
+          return a.cantidadPedidos - b.cantidadPedidos;
         });
+        this.loading = false;
+      } catch (error) {
+        console.error(
+          `Error al obtener MoBikers con Pedidos: ${error.message}`
+        );
+      }
     },
 
     async retrievePedidos() {
       try {
+        this.loading = true;
         const params = this.getRequestParams(
-          this.fechaInicio.toISOString().split("T")[0],
-          this.fechaFin.toISOString().split("T")[0],
+          this.$date(this.fechaInicio).format("YYYY-MM-DD"),
+          this.$date(this.fechaFin).format("YYYY-MM-DD"),
           this.page,
           this.pageSize
         );
 
-        const response = await PedidoService.historialPedidos(params);
+        const response = await PedidoService.searchPedidoProgramado(params);
         const { pedidos, totalPedidos } = response.data;
         this.pedidos = pedidos; // rows
         this.pedidosFiltrados = pedidos
-          .filter((pedido) => pedido.statusId === 1 || pedido.statusId === 2)
+          .filter(
+            (pedido) =>
+              (pedido.statusId === 1 || pedido.statusId === 2) &&
+              pedido.isRuteo === false
+          )
           .sort((a, b) => {
             return a.statusId > b.statusId ? 1 : -1;
           }); // rows
@@ -355,9 +501,46 @@ export default {
             pedido.statusId === 1 &&
             pedido.mobiker.fullName === "Asignar MoBiker"
         ).length;
+        this.loading = false;
       } catch (error) {
-        console.error(`Error al obtener los Pedidos:`);
+        console.error(`Error al obtener los Pedidos: ${error.message}`);
       }
+    },
+
+    async retrieveRuteos() {
+      try {
+        this.loading = true;
+        const params = {
+          desde: this.$date(this.fechaInicio).format("YYYY-MM-DD"),
+          hasta: this.$date(this.fechaFin).format("YYYY-MM-DD"),
+        };
+
+        const response = await PedidoService.getRuteos(params);
+        const { pedidos, totalPedidos } = response.data;
+        this.ruteosFiltrados = pedidos
+          .filter(
+            (pedido) =>
+              pedido.pedidosRuta[0].statusId === 1 ||
+              pedido.pedidosRuta[0].statusId === 2
+          )
+          .sort((a, b) => {
+            return a.pedidosRuta[0].statusId > b.pedidosRuta[0].statusId
+              ? 1
+              : -1;
+          });
+        this.totalRuteos = totalPedidos;
+        this.loading = false;
+      } catch (error) {
+        console.error(`Error al obtener los Ruteos: ${error.message}`);
+      }
+    },
+
+    async getPedidosAsignar() {
+      this.loading = true;
+      await this.retrievePedidos();
+      await this.retrieveRuteos();
+      await this.retrieveMobikers();
+      this.loading = false;
     },
 
     checkPedidosMobikers(mobiker, index) {
@@ -368,6 +551,7 @@ export default {
     },
 
     buscarPedido() {
+      this.loading = true;
       this.pedidosFiltrados = this.pedidos
         .filter((pedido) => {
           if (
@@ -382,11 +566,20 @@ export default {
             return pedido;
           }
         })
-        .filter((pedido) => pedido.statusId === 1 || pedido.statusId === 2);
+        .filter(
+          (pedido) =>
+            (pedido.statusId === 1 || pedido.statusId === 2) &&
+            pedido.isRuteo === false
+        );
 
       if (this.buscador.trim() === "") {
-        this.pedidosFiltrados = this.pedidos;
+        this.pedidosFiltrados = this.pedidos.filter(
+          (pedido) =>
+            (pedido.statusId === 1 || pedido.statusId === 2) &&
+            pedido.isRuteo === false
+        );
       }
+      this.loading = false;
     },
 
     handlePageChange(value) {
@@ -401,6 +594,31 @@ export default {
       this.showResumen = true;
     },
 
+    setActiveRuteo(ruta, index) {
+      this.currentRuta = ruta;
+      this.currentRutaIndex = index;
+
+      this.showRuteo = true;
+    },
+
+    assignPedido(pedido) {
+      if (this.pedidosArray.includes(pedido)) {
+        this.pedidosArray = this.pedidosArray.filter((item) => item !== pedido);
+      } else {
+        this.pedidosArray.push(pedido);
+      }
+    },
+
+    assignRuta(pedidos) {
+      if (this.pedidosArray.includes(pedidos[0])) {
+        this.pedidosArray = this.pedidosArray.filter(
+          (pedido) => !pedidos.includes(pedido)
+        );
+      } else {
+        this.pedidosArray = [...this.pedidosArray, ...pedidos];
+      }
+    },
+
     createArrayPedidos() {
       this.showDetalle = true;
     },
@@ -408,18 +626,26 @@ export default {
     closeModal() {
       this.showDetalle = false;
       this.showResumen = false;
-      this.pedidosArray.length = 0;
+      this.pedidosArray = [];
 
       this.currentPedido = null;
       this.currentIndex = -1;
+
+      this.currentRuta = null;
+      this.currentRutaIndex = -1;
     },
 
     closeResumen() {
       this.showDetalle = false;
       this.showResumen = false;
+      this.showRuteo = false;
+      this.pedidosArray = [];
 
       this.currentPedido = null;
       this.currentIndex = -1;
+
+      this.currentRuta = null;
+      this.currentRutaIndex = -1;
     },
 
     marcarAsignar() {
@@ -427,17 +653,22 @@ export default {
       this.pedidosArray.push(this.currentPedido);
     },
 
+    marcarRuteo() {
+      this.showRuteo = false;
+      this.assignRuta(this.currentRuta.pedidosRuta);
+    },
+
     refreshList() {
       this.buscador = "";
-      this.fechaInicio = new Date(
-        new Date().getTime() - 1000 * 60 * 60 * 24 * 6 // 6 días
-      );
-      this.fechaFin = new Date(new Date().getTime() + 1000 * 60 * 60 * 24); // Mañana
       this.retrievePedidos();
-      this.getMobikers();
+      this.retrieveRuteos();
+      this.retrieveMobikers();
 
       this.currentPedido = null;
       this.currentIndex = -1;
+      this.currentIndexMobiker = -1;
+      this.currentRuta = null;
+      this.currentRutaIndex = -1;
       this.pedidosArray = [];
     },
 

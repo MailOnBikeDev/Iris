@@ -36,15 +36,15 @@ body {
 }
 
 .mob-activo {
-  @apply inline-block px-2 font-bold text-white bg-green-500 rounded-full;
+  @apply inline-block px-2 py-1 text-xs font-bold text-white bg-green-500 rounded-full;
 }
 
 .mob-inactivo {
-  @apply inline-block px-2 font-bold text-white bg-yellow-600 rounded-full;
+  @apply inline-block px-2 py-1 text-xs font-bold text-white bg-yellow-600 rounded-full;
 }
 
 .mob-retirado {
-  @apply inline-block px-2 font-bold text-white bg-red-800 rounded-full;
+  @apply inline-block px-2 py-1 text-xs font-bold text-white bg-red-800 rounded-full;
 }
 
 .input {
@@ -61,25 +61,29 @@ body {
 
 /* Tags de Pedidos */
 .tag-programado {
-  @apply inline px-2 py-1 font-bold text-white bg-purple-400 rounded-full;
+  @apply inline px-2 py-1 text-xs font-bold text-white bg-purple-400 rounded-full;
 }
 
 .tag-recoger {
-  @apply inline px-2 py-1 font-bold text-white bg-yellow-400 rounded-full;
+  @apply inline px-2 py-1 text-xs font-bold text-white bg-yellow-400 rounded-full;
 }
 
 .tag-transito {
-  @apply inline px-2 py-1 font-bold text-white rounded-full bg-primary;
+  @apply inline px-2 py-1 text-xs font-bold text-white rounded-full bg-primary;
 }
 
 .tag-entregado {
-  @apply inline px-2 py-1 font-bold text-white bg-green-600 rounded-full;
+  @apply inline px-2 py-1 text-xs font-bold text-white bg-green-600 rounded-full;
 }
 
 .tag-falso-flete {
-  @apply inline px-2 py-1 font-bold text-white bg-red-600 rounded-full;
+  @apply inline px-2 py-1 text-xs font-bold text-white bg-red-600 rounded-full;
 }
 
 .tag-anulado {
-  @apply inline px-2 py-1 font-bold text-white bg-yellow-700 rounded-full;
+  @apply inline px-2 py-1 text-xs font-bold text-white bg-yellow-700 rounded-full;
+}
+
+input[type=checkbox]{
+  cursor: pointer;
 }

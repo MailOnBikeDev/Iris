@@ -1,7 +1,7 @@
 <template>
   <table v-if="casoEspecial" class="table w-full border-collapse table-auto ">
-    <!-- <tr
-      class="table-row text-center text-white border-2 bg-secondary border-secondary"
+    <tr
+      class="table-row text-sm text-center text-white border-2 bg-secondary border-secondary"
     >
       <th class="table-cell">Fecha</th>
       <th class="table-cell">Solicitante</th>
@@ -9,10 +9,12 @@
       <th class="table-cell">Dirección</th>
       <th class="table-cell">Distrito</th>
       <th class="table-cell">Tarifa</th>
-    </tr> -->
+      <th class="table-cell">Trámite</th>
+      <th class="table-cell">Observaciones</th>
+    </tr>
 
     <tr
-      class="table-row border-2 odd:bg-info odd:text-white border-secondary"
+      class="table-row text-xs border-2 odd:bg-info odd:text-white border-secondary"
       v-for="detalle in info"
       :key="detalle.id"
     >
@@ -23,7 +25,11 @@
         {{ capitalizar(detalle.contactoRemitente) }}
       </td>
       <td class="table-cell px-2 border-2 border-secondary">
-        {{ capitalizar(detalle.contactoConsignado) }}
+        {{
+          detalle.contactoConsignado.toLowerCase() === "mesa de partes"
+            ? capitalizar(detalle.empresaoConsignado)
+            : capitalizar(detalle.contactoConsignado)
+        }}
       </td>
       <td class="table-cell px-2 border-2 border-secondary">
         {{ capitalizar(detalle.direccionConsignado) }}
@@ -33,6 +39,9 @@
       </td>
       <td class="table-cell px-2 text-center border-2 border-secondary">
         {{ detalle.tarifa }}
+      </td>
+      <td class="table-cell px-2 text-center border-2 border-secondary">
+        {{ detalle.otroDatoConsignado }}
       </td>
     </tr>
 
@@ -47,22 +56,29 @@
       >
         {{ totalTarifa }}
       </td>
+      <td
+        class="table-cell px-2 font-bold text-center border-2 border-secondary text-primary"
+      >
+        {{ totalTramite }}
+      </td>
     </tr>
   </table>
 
   <table v-else class="table w-full border-collapse table-auto ">
-    <!-- <tr
-      class="table-row text-center text-white border-2 bg-secondary border-secondary"
+    <tr
+      class="table-row text-sm text-center text-white border-2 bg-secondary border-secondary"
     >
       <th class="table-cell">Fecha</th>
       <th class="table-cell">Consignado</th>
       <th class="table-cell">Dirección</th>
       <th class="table-cell">Distrito</th>
       <th class="table-cell">Tarifa</th>
-    </tr> -->
+      <th class="table-cell">Trámite</th>
+      <th class="table-cell">Observaciones</th>
+    </tr>
 
     <tr
-      class="table-row border-2 odd:bg-info odd:text-white border-secondary"
+      class="table-row text-xs border-2 odd:bg-info odd:text-white border-secondary"
       v-for="detalle in info"
       :key="detalle.id"
     >
@@ -70,7 +86,11 @@
         {{ $date(detalle.fecha).format("DD MMM") }}
       </td>
       <td class="table-cell px-2 border-2 border-secondary">
-        {{ capitalizar(detalle.contactoConsignado) }}
+        {{
+          detalle.contactoConsignado.toLowerCase() === "mesa de partes"
+            ? capitalizar(detalle.empresaConsignado)
+            : capitalizar(detalle.contactoConsignado)
+        }}
       </td>
       <td class="table-cell px-2 border-2 border-secondary">
         {{ capitalizar(detalle.direccionConsignado) }}
@@ -80,6 +100,12 @@
       </td>
       <td class="table-cell px-2 text-center border-2 border-secondary">
         {{ detalle.tarifa }}
+      </td>
+      <td class="table-cell px-2 text-center border-2 border-secondary">
+        {{ detalle.tramite }}
+      </td>
+      <td class="table-cell px-2 text-center border-2 border-secondary">
+        {{ detalle.otroDatoConsignado }}
       </td>
     </tr>
 
@@ -92,6 +118,11 @@
         class="table-cell px-2 font-bold text-center border-2 border-secondary text-primary"
       >
         {{ totalTarifa }}
+      </td>
+      <td
+        class="table-cell px-2 font-bold text-center border-2 border-secondary text-primary"
+      >
+        {{ totalTramite }}
       </td>
     </tr>
   </table>
@@ -112,11 +143,17 @@ export default {
   },
   computed: {
     totalTarifa() {
-      let total = 0;
-      this.info.forEach((detalle) => {
-        total += detalle.tarifa;
-      });
-      return total.toFixed(2);
+      let total = this.info.reduce((acc, detalle) => {
+        return +detalle.tarifa + acc;
+      }, 0);
+      return +total.toFixed(2);
+    },
+
+    totalTramite() {
+      let total = this.info.reduce((acc, detalle) => {
+        return +detalle.tramite + acc;
+      }, 0);
+      return +total.toFixed(2);
     },
   },
   methods: {

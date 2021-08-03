@@ -8,13 +8,20 @@
       </h1>
     </div>
 
+    <div class="hidden" ref="stats">
+      <MensajeEstadisticas
+        v-if="currentMobiker"
+        :estadisticas="currentMobiker"
+      />
+    </div>
+
     <div class="flex flex-row mb-4 -mt-10 justify-evenly">
       <div>
         <input
           type="search"
           class="input"
           v-model="buscador"
-          @keyup="searchMobiker"
+          @keyup.enter="searchMobiker"
           placeholder="Buscar mobiker..."
         />
       </div>
@@ -25,6 +32,17 @@
           icon="sync-alt"
         />
       </button>
+
+      <router-link
+        to="/mobikers/mobiker-top"
+        class="px-6 py-2 font-bold text-white bg-secondary rounded-xl focus:outline-none hover:bg-info"
+        custom
+        v-slot="{ navigate }"
+      >
+        <span @click="navigate" role="link" class="text-center cursor-pointer"
+          >MoBikers Top</span
+        >
+      </router-link>
 
       <router-link
         to="/mobikers/nuevo-mobiker"
@@ -38,6 +56,18 @@
       </router-link>
     </div>
 
+    <div class="flex justify-around w-1/2 px-2 my-2 ml-4">
+      <button @click="filtrarMobiker('Activo')" class="mob-activo">
+        Activos ({{ contarMoBikersActivos }})
+      </button>
+      <button @click="filtrarMobiker('Inactivo')" class="mob-inactivo">
+        Inactivos ({{ contarMoBikersInactivos }})
+      </button>
+      <button @click="filtrarMobiker('Retirado')" class="mob-retirado">
+        Retirados ({{ contarMoBikersRetirados }})
+      </button>
+    </div>
+
     <div class="grid grid-cols-5 gap-x-2">
       <div
         class="inline-grid items-center grid-cols-7 col-span-3 mr-2 text-sm font-bold text-center text-primary"
@@ -48,7 +78,7 @@
         <p>Bicienvios</p>
         <p>Rango</p>
         <p>Estado</p>
-        <p>Editar</p>
+        <p>Acciones</p>
       </div>
 
       <div
@@ -84,8 +114,10 @@
       <div
         class="col-span-3 overflow-y-auto bg-white border border-black pedidos-scroll max-h-96"
       >
+        <Loading v-if="loading" />
         <div
-          class="grid items-center grid-cols-7 py-2 text-sm text-center border-b-2 cursor-default h-14 hover:bg-info border-primary"
+          v-else
+          class="grid items-center grid-cols-7 py-2 text-xs text-center border-b-2 cursor-default h-14 hover:bg-info border-primary"
           :class="{
             'bg-info text-white font-bold': mobiker.id == currentIndex,
           }"
@@ -143,6 +175,13 @@
                 role="link"
               />
             </router-link>
+
+            <button class="ml-3" @click="statsMob(mobiker, mobiker.id)">
+              <font-awesome-icon
+                class="text-2xl text-primary"
+                icon="chart-bar"
+              />
+            </button>
           </div>
         </div>
       </div>
@@ -169,9 +208,10 @@
 <script>
 import MobikerService from "@/services/mobiker.service";
 import MoBDetalles from "@/components/MoBDetalles.vue";
+import MensajeEstadisticas from "@/components/MensajeEstadisticas.vue";
 import BaseBiciEnvios from "@/components/BaseBiciEnvios.vue";
 import BaseEcoamigable from "@/components/BaseEcoamigable.vue";
-import { mapState, mapActions } from "vuex";
+import Loading from "@/components/Loading";
 
 const tabNames = {
   detalles: "detalles",
@@ -182,6 +222,7 @@ const tabNames = {
 export default {
   data() {
     return {
+      mobikers: [],
       mobikersFiltrados: [],
       pedidosMobiker: [],
       currentMobiker: null,
@@ -196,25 +237,44 @@ export default {
         [tabNames.ecoamigable]: BaseEcoamigable,
       },
       activeTabName: null,
+      loading: false,
+
+      statsCopiadas: false,
     };
-  },
-  computed: {
-    ...mapState("mobikers", ["mobikers"]),
   },
   components: {
     MoBDetalles,
     BaseBiciEnvios,
     BaseEcoamigable,
+    Loading,
+    MensajeEstadisticas,
   },
-  mounted() {
-    this.mobikersFiltrados = this.mobikers.sort((a, b) => {
-      return a.fullName.localeCompare(b.fullName);
-    });
+  async mounted() {
+    this.mobikersFiltrados = await MobikerService.filterMobikers("Activo");
+    await this.getAllMobikers();
+
     this.currentTab = this.tabs[tabNames.detalles];
   },
-  methods: {
-    ...mapActions("mobikers", ["getMobikers", "buscarMobikers"]),
+  computed: {
+    contarMoBikersActivos() {
+      return this.mobikers.filter((mob) => {
+        return mob.status === "Activo";
+      }).length;
+    },
 
+    contarMoBikersInactivos() {
+      return this.mobikers.filter((mob) => {
+        return mob.status === "Inactivo";
+      }).length;
+    },
+
+    contarMoBikersRetirados() {
+      return this.mobikers.filter((mob) => {
+        return mob.status === "Retirado";
+      }).length;
+    },
+  },
+  methods: {
     async retrievePedidosMobikers(id) {
       try {
         const response = await MobikerService.getPedidosDelMobikerById(id);
@@ -226,6 +286,16 @@ export default {
       }
     },
 
+    async getAllMobikers() {
+      try {
+        this.mobikers = await MobikerService.getMobikers();
+      } catch (error) {
+        console.error(
+          `No se pudieron obtener todos los MoBikers: ${error.message}`
+        );
+      }
+    },
+
     handleTabClick(tabName) {
       this.activeTabName = tabName;
       this.currentTab = this.tabs[tabName];
@@ -233,35 +303,64 @@ export default {
 
     async refreshList() {
       try {
-        await this.getMobikers();
-        this.mobikersFiltrados = this.mobikers.sort((a, b) => {
-          return a.fullName.localeCompare(b.fullName);
-        });
+        this.loading = true;
+        this.mobikersFiltrados = await MobikerService.filterMobikers("Activo");
 
         this.currentMobiker = null;
         this.currentIndex = -1;
+        this.buscador = "";
+        await this.getAllMobikers();
+        this.loading = false;
       } catch (error) {
         console.error(`Error al refrescar la lista: ${error.message}`);
       }
     },
 
-    setActiveMobiker(mobiker, index) {
+    async setActiveMobiker(mobiker, index) {
       this.currentMobiker = mobiker;
       this.currentIndex = index;
-      this.handleTabClick(tabNames.detalles);
-      this.retrievePedidosMobikers(index);
+      await this.handleTabClick(tabNames.detalles);
+      await this.retrievePedidosMobikers(index);
+    },
+
+    async statsMob(mobiker, index) {
+      await this.setActiveMobiker(mobiker, index);
+      await this.copiarEstadisticas();
+    },
+
+    async filtrarMobiker(status) {
+      this.loading = true;
+      this.currentMobiker = null;
+      this.currentIndex = -1;
+      this.buscador = "";
+      this.mobikersFiltrados = await MobikerService.filterMobikers(status);
+      this.loading = false;
     },
 
     async searchMobiker() {
       try {
-        this.mobikersFiltrados = await this.buscarMobikers(this.buscador);
+        this.loading = true;
+        this.mobikersFiltrados = await MobikerService.searchMobiker(
+          this.buscador
+        );
 
         if (this.buscador.trim() === "") {
-          this.mobikersFiltrados = this.mobikers;
+          this.mobikersFiltrados = await MobikerService.filterMobikers(
+            "Activo"
+          );
         }
+        this.loading = false;
       } catch (error) {
         console.error(`Error en el buscador de MoBikers: ${error.message}`);
       }
+    },
+
+    copiarEstadisticas() {
+      console.log(this.$refs.stats.innerText);
+      this.$copyText(this.$refs.stats.innerText).then(() => {
+        this.statsCopiadas = true;
+        console.log("Texto copiado");
+      });
     },
   },
 };

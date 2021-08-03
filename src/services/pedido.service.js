@@ -17,6 +17,23 @@ class PedidoService {
     }
   }
 
+  async createRuteo() {
+    try {
+      let ruteo = await axios.post(
+        `${API_URL}/pedidos/nueva-ruta`,
+        {},
+        {
+          headers: authHeader(),
+        }
+      );
+      const { id } = ruteo.data;
+
+      return id;
+    } catch (error) {
+      console.error(`Error al crear Ruteo: ${error.message}`);
+    }
+  }
+
   async storageNuevoPedido(nuevoPedido) {
     try {
       let pedido = await axios.post(
@@ -52,6 +69,8 @@ class PedidoService {
           rolCliente: nuevoPedido.rolCliente,
           operador: nuevoPedido.operador,
           viajes: nuevoPedido.viajes,
+          isRuteo: nuevoPedido.isRuteo,
+          ruteo: nuevoPedido.ruteo,
         },
         { headers: authHeader() }
       );
@@ -102,13 +121,15 @@ class PedidoService {
           CO2Ahorrado: editarPedido.CO2Ahorrado,
           ruido: editarPedido.ruido,
           status: editarPedido.statusId,
-          distritoConsignado: editarPedido.distrito.distrito,
+          distritoConsignado: editarPedido.distritoConsignado,
           mobiker: editarPedido.mobiker.fullName,
           tipoEnvio: editarPedido.tipoDeEnvio.tipo,
           modalidad: editarPedido.modalidad.tipo,
           rolCliente: editarPedido.rolCliente,
           operador: editarPedido.operador,
           viajes: editarPedido.viajes,
+          isRuteo: editarPedido.isRuteo,
+          ruteoId: editarPedido.ruteo,
         },
         { headers: authHeader() }
       );
@@ -166,11 +187,7 @@ class PedidoService {
     try {
       let pedidoEditado = await axios.put(
         `${API_URL}/pedidos/cambiar-estado/${id}`,
-        {
-          status: pedidoCambiado.statusId,
-          comentario: pedidoCambiado.comentario,
-          mobiker: pedidoCambiado.mobiker,
-        },
+        pedidoCambiado,
         { headers: authHeader() }
       );
 
@@ -188,6 +205,57 @@ class PedidoService {
       });
 
       return pedido;
+    } catch (error) {
+      console.error("Mensaje de error: ", error.message);
+    }
+  }
+
+  async getPedidosTransferencia(params) {
+    try {
+      let pedido = await axios.get(`${API_URL}/pedidos-transferencia`, {
+        params,
+        headers: authHeader(),
+      });
+
+      return pedido;
+    } catch (error) {
+      console.error("Mensaje de error: ", error.message);
+    }
+  }
+
+  async getPedidosRecaudo(params) {
+    try {
+      let pedido = await axios.get(`${API_URL}/pedidos-recaudo`, {
+        params,
+        headers: authHeader(),
+      });
+
+      return pedido;
+    } catch (error) {
+      console.error("Mensaje de error: ", error.message);
+    }
+  }
+
+  async getRuteos(params) {
+    try {
+      let pedido = await axios.get(`${API_URL}/ruteos-pedidos`, {
+        params,
+        headers: authHeader(),
+      });
+
+      return pedido;
+    } catch (error) {
+      console.error("Mensaje de error: ", error.message);
+    }
+  }
+
+  async getRuteoById(id) {
+    try {
+      let ruteo = await axios.get(`${API_URL}/ruteo/${id}`, {
+        headers: authHeader(),
+      });
+
+      return ruteo;
     } catch (error) {
       console.error("Mensaje de error: ", error.message);
     }

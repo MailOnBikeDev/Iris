@@ -1,11 +1,16 @@
 <template>
   <div class="grid grid-cols-2 p-4 bg-white rounded-xl gap-x-8">
     <div
-      class="grid w-full grid-cols-2 col-span-2 mx-auto border-b-2 gap-x-8 border-secondary place-items-center"
+      class="grid w-full grid-cols-3 col-span-2 mx-auto text-sm border-b-2 gap-x-8 border-secondary place-items-center"
     >
       <p class="mb-2">
         <span class="resalta">Fecha: </span>
         {{ $date(currentPedido.fecha).format("DD MMM YYYY") }}
+      </p>
+
+      <p class="mb-2 text-center">
+        <span class="resalta">Tipo Envío: </span
+        >{{ currentPedido.tipoDeEnvio.tipo }}
       </p>
 
       <div class="mb-2">
@@ -35,8 +40,8 @@
       v-if="currentPedido.rolCliente === 'Remitente'"
       class="grid grid-cols-2 col-span-2"
     >
-      <div class="grid w-full grid-flow-row px-4 py-2 text-sm">
-        <h2 class="mb-4 text-3xl font-bold text-center text-primary">
+      <div class="grid w-full grid-flow-row px-4 py-2 text-xs">
+        <h2 class="mb-4 text-2xl font-bold text-center text-primary">
           Origen
         </h2>
         <p class="mb-2">
@@ -65,8 +70,8 @@
         </p>
       </div>
 
-      <div class="grid w-full grid-flow-row px-4 py-2 text-sm">
-        <h2 class="mb-4 text-3xl font-bold text-center text-primary">
+      <div class="grid w-full grid-flow-row px-4 py-2 text-xs">
+        <h2 class="mb-4 text-2xl font-bold text-center text-primary">
           Destino
         </h2>
         <p class="mb-2">
@@ -98,8 +103,8 @@
 
     <!-- Caso Cliente es Destino -->
     <div class="grid grid-cols-2 col-span-2" v-else>
-      <div class="grid w-full grid-flow-row px-4 py-2 text-sm">
-        <h2 class="mb-4 text-3xl font-bold text-center text-primary">
+      <div class="grid w-full grid-flow-row px-4 py-2 text-xs">
+        <h2 class="mb-4 text-2xl font-bold text-center text-primary">
           Origen
         </h2>
         <p class="mb-2">
@@ -128,8 +133,8 @@
         </p>
       </div>
 
-      <div class="grid grid-flow-row px-4 py-2 text-sm">
-        <h2 class="mb-4 text-3xl font-bold text-center text-primary">
+      <div class="grid grid-flow-row px-4 py-2 text-xs">
+        <h2 class="mb-4 text-2xl font-bold text-center text-primary">
           Destino
         </h2>
         <p class="mb-2">
@@ -159,15 +164,14 @@
       </div>
     </div>
 
-    <div class="grid w-full col-span-2 py-2 mb-2 text-sm place-items-center ">
+    <div class="grid w-full col-span-2 py-2 mb-2 text-xs place-items-center ">
       <p>
-        <span class="resalta">Mensaje del MoBiker: </span
-        >{{ currentPedido.comentario }}
+        <span class="resalta">Comentario: </span>{{ currentPedido.comentario }}
       </p>
     </div>
 
     <div
-      class="grid w-full col-span-2 py-2 mb-2 text-sm border-t-2 place-items-center border-secondary"
+      class="grid w-full col-span-2 py-2 mb-2 text-xs border-t-2 place-items-center border-secondary"
     >
       <p>
         <span class="resalta">MoBiker: </span
@@ -176,7 +180,7 @@
     </div>
 
     <div
-      class="grid w-full grid-cols-2 col-span-2 gap-2 mx-auto text-sm place-items-center"
+      class="grid w-full grid-cols-2 col-span-2 gap-2 mx-auto text-xs place-items-center"
     >
       <p class="mb-2">
         <span class="resalta">Tarifa: </span>S/.
@@ -184,10 +188,11 @@
       </p>
       <p class="mb-2">
         <span class="resalta">Comisión: </span>S/.
-        {{ currentPedido.comision }}
+        {{ +currentPedido.comision.toFixed(2) }}
       </p>
       <p class="mb-2">
-        <span class="resalta">Distancia: </span>{{ currentPedido.distancia }}Km
+        <span class="resalta">Distancia: </span
+        >{{ +currentPedido.distancia.toFixed(1) }}Km
       </p>
       <p class="mb-2">
         <span class="resalta">Pago: </span>{{ currentPedido.formaPago }}

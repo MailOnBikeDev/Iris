@@ -1,7 +1,7 @@
 <template>
   <div
     v-if="showDetalle"
-    class="absolute z-40 w-11/12 h-auto p-4 mx-auto transform -translate-x-1/2 shadow-xl -translate-y-2/3 bg-primary rounded-xl top-2/3 left-1/2"
+    class="absolute z-40 w-11/12 h-auto p-4 mx-auto transform -translate-x-1/2 shadow-xl bg-primary rounded-xl top-12 left-1/2"
   >
     <div class="absolute -top-4 -right-2">
       <button
@@ -12,12 +12,18 @@
       </button>
     </div>
 
-    <div class="flex justify-center">
+    <div class="relative flex justify-center">
       <h1
         class="inline-block px-6 pt-1 text-2xl font-bold bg-white text-primary rounded-t-xl"
       >
         {{ cliente.razonComercial }}
       </h1>
+
+      <h2
+        class="absolute right-0 inline-block px-6 pt-1 text-xl font-bold text-center bg-white top-1 text-primary rounded-t-xl"
+      >
+        {{ cliente.tipoDeComprobante.tipo }}
+      </h2>
     </div>
 
     <div
