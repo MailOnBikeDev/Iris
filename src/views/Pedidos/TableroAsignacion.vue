@@ -287,7 +287,14 @@
           </div>
 
           <div @click="setActivePedido(pedido, pedido.id)">
-            <p>{{ pedido.contactoConsignado }}</p>
+            <p
+              v-if="
+                pedido.contactoConsignado.toLowerCase() === 'mesa de partes'
+              "
+            >
+              {{ pedido.empresaConsignado }}
+            </p>
+            <p v-else>{{ pedido.contactoConsignado }}</p>
           </div>
 
           <div @click="setActivePedido(pedido, pedido.id)">
