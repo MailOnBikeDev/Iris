@@ -263,7 +263,7 @@
         <Loading v-if="loading" />
         <div
           v-else
-          class="grid items-center grid-cols-10 py-2 text-xs text-center border-b-2 cursor-pointer gap-x-1 h-14 border-primary hover:bg-info"
+          class="grid items-center h-auto grid-cols-10 py-2 text-xs text-center border-b-2 cursor-pointer gap-x-1 border-primary hover:bg-info"
           :class="{
             'bg-info text-white font-bold': pedido.id == currentIndex,
           }"

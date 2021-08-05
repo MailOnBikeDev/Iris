@@ -1,7 +1,7 @@
 <template>
   <div
     v-if="showDetalle"
-    class="absolute z-40 w-11/12 h-auto p-4 mx-auto transform -translate-x-1/2 shadow-xl bg-primary rounded-xl top-12 left-1/2"
+    class="absolute z-40 w-11/12 p-4 mx-auto transform -translate-x-1/2 shadow-xl modal bg-primary rounded-xl top-12 left-1/2"
   >
     <div class="absolute -top-4 -right-2">
       <button
@@ -27,15 +27,24 @@
     </div>
 
     <div
-      class="flex flex-col items-center p-4 overflow-y-auto text-sm bg-white rounded-xl pedidos-scroll h-96 max-h-96"
+      class="flex flex-col items-center p-4 overflow-y-auto text-sm bg-white inner-modal rounded-xl pedidos-scroll"
     >
-      <!-- Por cobrar -->
-      <h2 class="text-xl resalta">Por cobrar</h2>
-      <TablaFacturacion :casoEspecial="casoEspecial" :info="pagosPorCobrar" />
+      <div class="flex items-center mb-4 space-x-4">
+        <p class="text-xl text-center resalta">RUC:</p>
+        <span class="text-xl select-all">{{ cliente.ruc }}</span>
+      </div>
 
-      <!-- Pagos en Efectivo -->
-      <h2 class="mt-4 text-xl resalta">Pagos en Efectivo</h2>
-      <TablaFacturacion :casoEspecial="casoEspecial" :info="pagosEfectivo" />
+      <!-- Por cobrar -->
+      <div class="w-full" v-if="pagosPorCobrar.length > 0">
+        <h2 class="text-xl text-center resalta">Por cobrar</h2>
+        <TablaFacturacion :casoEspecial="casoEspecial" :info="pagosPorCobrar" />
+      </div>
+
+      <div class="w-full" v-if="pagosEfectivo.length > 0">
+        <!-- Pagos en Efectivo -->
+        <h2 class="mt-4 text-xl text-center resalta">Pagos en Efectivo</h2>
+        <TablaFacturacion :casoEspecial="casoEspecial" :info="pagosEfectivo" />
+      </div>
 
       <!-- Imagen de Tabla de Facturacion -->
       <h2 class="mt-4 text-xl resalta">Reporte a copiar</h2>
@@ -148,6 +157,15 @@ export default {
   &-thumb {
     background: #52678e;
     border-radius: 1rem;
+  }
+}
+
+.modal {
+  max-height: 90vh;
+
+  .inner-modal {
+    // height: 600px;
+    max-height: 700px;
   }
 }
 </style>
