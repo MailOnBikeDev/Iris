@@ -630,7 +630,7 @@ export default {
     },
 
     "editarPedido.recaudo": function() {
-      if (this.editarPedido.recaudo !== 0) {
+      if (this.editarPedido.recaudo > 0) {
         this.editarPedido.tarifa = +(this.tarifaMemoria + 2);
       }
       if (this.editarPedido.recaudo === 0) {
@@ -638,23 +638,22 @@ export default {
       }
     },
 
-    "editarPedido.modalidad": function() {
-      console.log(this.editarPedido.modalidad);
-      if (this.editarPedido.modalidad.tipo === "Con Retorno") {
-        this.editarPedido.viajes = 2;
-        this.editarPedido.distancia *= 2;
-        if (this.editarPedido.tipoEnvio === "E-Commerce") {
-          this.editarPedido.tarifa = this.tarifaMemoria * 2;
-        } else {
-          this.editarPedido.tarifa += +Math.ceil(this.tarifaMemoria / 2);
-        }
-      }
-      if (this.editarPedido.modalidad.tipo === "Una vía") {
-        this.editarPedido.viajes = 1;
-        this.editarPedido.tarifa = this.tarifaMemoria;
-        this.editarPedido.distancia = this.distanciaMemoria;
-      }
-    },
+    // "editarPedido.modalidad": function() {
+    //   if (this.editarPedido.modalidad.tipo === "Con Retorno") {
+    //     this.editarPedido.viajes = 2;
+    //     this.editarPedido.distancia *= 2;
+    //     if (this.editarPedido.tipoEnvio === "E-Commerce") {
+    //       this.editarPedido.tarifa = +Math.ceil(this.tarifaMemoria / 2) * 2;
+    //     } else {
+    //       this.editarPedido.tarifa = +Math.ceil(this.tarifaMemoria / 2);
+    //     }
+    //   }
+    //   if (this.editarPedido.modalidad.tipo === "Una vía") {
+    //     this.editarPedido.viajes = 1;
+    //     this.editarPedido.tarifa = this.tarifaMemoria;
+    //     this.editarPedido.distancia = this.distanciaMemoria;
+    //   }
+    // },
   },
   methods: {
     ...mapActions("mobikers", ["obtenerComision"]),
@@ -666,7 +665,7 @@ export default {
         this.editarPedido = response.data;
         this.editarPedido.distritoConsignado = response.data.distrito.distrito;
         this.editarPedido.tipoEnvio = response.data.tipoDeEnvio.tipo;
-        this.tarifaMemoria = this.editarPedido.tarifa;
+        this.tarifaMemoria = response.data.tarifa;
         this.tarifaSugeridaMemoria = this.editarPedido.tarifaSugerida;
         this.distanciaMemoria = this.editarPedido.distancia;
 
