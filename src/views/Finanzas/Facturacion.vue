@@ -319,7 +319,7 @@ export default {
         const response = await ClienteService.getPedidosDelCliente(params);
 
         const { pedidos, totalPedidos } = response.data;
-        this.pedidosCliente = pedidos; // rows
+        this.pedidosCliente = pedidos.filter((pedido) => pedido.statusId !== 6); // rows
         this.cantidadPedidos = totalPedidos; // count
       } catch (error) {
         console.error(
