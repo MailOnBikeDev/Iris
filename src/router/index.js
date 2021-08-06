@@ -156,6 +156,30 @@ const routes = [
     },
   },
   {
+    path: "/destinos/tablero-destinos",
+    name: "TableroDestinos",
+    component: () => import("@/views/Destinos/TableroDestinos.vue"),
+    meta: {
+      requiresAuth: true,
+    },
+  },
+  {
+    path: "/destinos/crear-destino",
+    name: "NuevoDestino",
+    component: () => import("@/views/Destinos/NuevoDestino.vue"),
+    meta: {
+      requiresAuth: true,
+    },
+  },
+  {
+    path: "/destinos/tablero-destinos/:id",
+    name: "EditarDestino",
+    component: () => import("@/views/Destinos/EditarDestino.vue"),
+    meta: {
+      requiresAuth: true,
+    },
+  },
+  {
     path: "/finanzas/historial-pedidos",
     name: "HistorialPedidos",
     component: () => import("@/views/Finanzas/HistorialPedidos.vue"),
