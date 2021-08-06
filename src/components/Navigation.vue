@@ -47,7 +47,7 @@
             class="px-2 py-2 rounded link hover:bg-blue-500 hover:text-white"
           >
             <router-link :to="link.link" custom v-slot="{ navigate }">
-              <span @click="navigate" role="link">
+              <span @click="navigate" role="link" class="w-full">
                 {{ link.title }}
               </span>
             </router-link>
@@ -87,7 +87,6 @@ export default {
         { title: "Crear usuario", link: "/register" },
         { title: "Crear usuario Cliente", link: "/nuevo-usuario-cliente" },
         { title: "Equipo MoB Admin", link: "/equipo-admin" },
-        // { title: "Mis Estadísticas", link: "/register" },
       ],
       navigationMenu: [
         {
@@ -106,10 +105,6 @@ export default {
           title: "Pedidos",
           link: "/pedidos/tablero-pedidos",
         },
-        // {
-        // 	title: "Testing",
-        // 	link: "/testing",
-        // },
       ],
     };
   },
