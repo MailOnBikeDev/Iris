@@ -28,8 +28,8 @@
       <td class="table-cell px-2 border-2 border-secondary">
         {{
           detalle.contactoConsignado.toLowerCase() === "mesa de partes"
-            ? capitalizar(detalle.empresaConsignado)
-            : capitalizar(detalle.contactoConsignado)
+            ? detalle.empresaConsignado
+            : detalle.contactoConsignado
         }}
       </td>
       <td class="table-cell px-2 border-2 border-secondary">
@@ -101,8 +101,8 @@
       <td class="table-cell px-2 border-2 border-secondary">
         {{
           detalle.contactoConsignado.toLowerCase() === "mesa de partes"
-            ? capitalizar(detalle.empresaConsignado)
-            : capitalizar(detalle.contactoConsignado)
+            ? detalle.empresaConsignado
+            : detalle.contactoConsignado
         }}
       </td>
       <td class="table-cell px-2 border-2 border-secondary">

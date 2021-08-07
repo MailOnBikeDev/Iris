@@ -26,12 +26,12 @@
       <td class="table-cell px-2 border-2 border-secondary">
         {{
           detalle.contactoConsignado.toLowerCase() === "mesa de partes"
-            ? capitalizar(detalle.empresaConsignado)
-            : capitalizar(detalle.contactoConsignado)
+            ? detalle.empresaConsignado
+            : detalle.contactoConsignado
         }}
       </td>
       <td class="table-cell px-2 border-2 border-secondary">
-        {{ capitalizar(detalle.contactoConsignado) }}
+        {{ detalle.contactoConsignado }}
       </td>
       <td class="table-cell px-2 border-2 border-secondary">
         {{ capitalizar(detalle.direccionConsignado) }}
@@ -55,8 +55,8 @@
           >BICIDELIVERY:
           {{
             detalle.contactoConsignado.toLowerCase() === "mesa de partes"
-              ? capitalizar(detalle.empresaConsignado)
-              : capitalizar(detalle.contactoConsignado)
+              ? detalle.empresaConsignado
+              : detalle.contactoConsignado
           }}
           del {{ $date(detalle.fecha).format("DD/MM/YYYY") }}</span
         >
@@ -117,12 +117,12 @@
       <td class="table-cell px-2 border-2 border-secondary">
         {{
           detalle.contactoConsignado.toLowerCase() === "mesa de partes"
-            ? capitalizar(detalle.empresaConsignado)
-            : capitalizar(detalle.contactoConsignado)
+            ? detalle.empresaConsignado
+            : detalle.contactoConsignado
         }}
       </td>
       <td class="table-cell px-2 border-2 border-secondary">
-        {{ capitalizar(detalle.direccionConsignado) }}
+        {{ detalle.direccionConsignado }}
       </td>
       <td class="table-cell px-2 text-center border-2 border-secondary">
         {{ detalle.distrito.distrito }}
@@ -143,8 +143,8 @@
           >BICIDELIVERY:
           {{
             detalle.contactoConsignado.toLowerCase() === "mesa de partes"
-              ? capitalizar(detalle.empresaConsignado)
-              : capitalizar(detalle.contactoConsignado)
+              ? detalle.empresaConsignado
+              : detalle.contactoConsignado
           }}
           del {{ $date(detalle.fecha).format("DD/MM/YYYY") }}</span
         >
