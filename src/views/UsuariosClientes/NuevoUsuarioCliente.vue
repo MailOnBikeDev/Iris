@@ -232,6 +232,9 @@ export default {
 
     setEmpresa(cliente) {
       if (cliente) {
+        this.nuevoUserCliente.contacto = cliente.contacto;
+        this.nuevoUserCliente.email = cliente.email;
+        this.nuevoUserCliente.telefono = cliente.telefono;
         this.nuevoUserCliente.empresa = cliente.razonComercial;
       }
     },
