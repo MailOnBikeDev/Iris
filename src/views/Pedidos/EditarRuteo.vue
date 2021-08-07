@@ -1133,8 +1133,8 @@ export default {
               distancia: this.pedidos[i].distancia,
               CO2Ahorrado: this.pedidos[i].CO2Ahorrado,
               ruido: this.pedidos[i].ruido,
-              status: this.pedido.status,
-              mobiker: { fullName: this.pedidos[i].mobiker.fullName },
+              statusId: this.pedido.status,
+              mobiker: { fullName: this.pedido.mobiker },
               tipoDeEnvio: { tipo: this.pedido.tipoEnvio },
               modalidad: { tipo: this.pedidos[i].modalidad.tipo },
               operador: this.pedido.operador,
@@ -1209,10 +1209,12 @@ export default {
         this.alert.show = true;
         this.alert.success = true;
 
-        // setTimeout(() => {
-        //   location.reload();
-        // }, 1500);
+        setTimeout(() => {
+          this.alert.show = true;
+          history.go(-1);
+        }, 1500);
       } catch (error) {
+        this.showLoading = false;
         console.log(`Error al Editar Pedido: ${error.response.data.message}`);
         this.alert.message = error.response.data.message;
         this.alert.show = true;
@@ -1473,6 +1475,9 @@ export default {
         this.pedido.fecha = new Date(
           new Date(this.pedido.fecha).getTime() + 1000 * 60 * 60 * 5
         );
+
+        console.log(this.pedido);
+        console.log(response.data.pedidosRuta);
       } catch (error) {
         console.error(`Error al obtener un Ruteo por Id. ${error.message}`);
       }
