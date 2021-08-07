@@ -1112,11 +1112,11 @@ export default {
             ).toFixed(2);
 
             // Acomodando Fechas
-            this.nuevoPedido.fecha = new Date(
+            const acomodandoFecha = new Date(
               new Date(this.nuevoPedido.fecha).getTime() - 1000 * 60 * 60 * 5
             );
             let pedidoExtendido = {
-              fecha: this.nuevoPedido.fecha,
+              fecha: acomodandoFecha,
               contactoRemitente: this.nuevoPedido.contactoRemitente,
               empresaRemitente: this.nuevoPedido.empresaRemitente,
               direccionRemitente: this.nuevoPedido.direccionRemitente,
