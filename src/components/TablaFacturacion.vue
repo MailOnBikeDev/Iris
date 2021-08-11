@@ -4,6 +4,7 @@
       class="table-row text-xs text-center text-white border-2 bg-secondary border-secondary"
     >
       <th class="table-cell">Fecha</th>
+      <th class="table-cell"># Pedido</th>
       <th class="table-cell">Solicitante</th>
       <th class="table-cell">Consignado</th>
       <th class="table-cell">Dirección</th>
@@ -22,6 +23,9 @@
     >
       <td class="table-cell px-2 text-center border-2 border-secondary">
         {{ $date(detalle.fecha).format("DD MMM") }}
+      </td>
+      <td class="table-cell px-2 text-center border-2 border-secondary">
+        {{ detalle.id }}
       </td>
       <td class="table-cell px-2 border-2 border-secondary">
         {{
@@ -96,6 +100,7 @@
       class="table-row text-xs text-center text-white border-2 bg-secondary border-secondary"
     >
       <th class="table-cell">Fecha</th>
+      <th class="table-cell"># Pedido</th>
       <th class="table-cell">Consignado</th>
       <th class="table-cell">Dirección</th>
       <th class="table-cell">Distrito</th>
@@ -113,6 +118,9 @@
     >
       <td class="table-cell px-2 text-center border-2 border-secondary">
         {{ $date(detalle.fecha).format("DD MMM") }}
+      </td>
+      <td class="table-cell px-2 text-center border-2 border-secondary">
+        {{ detalle.id }}
       </td>
       <td class="table-cell px-2 border-2 border-secondary">
         {{
