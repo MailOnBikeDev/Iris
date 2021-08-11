@@ -18,12 +18,18 @@
         </button>
       </div>
 
-      <div class="overlay" v-if="showBuscador"></div>
+      <div class="overlay" v-if="showBuscador || showBuscadorDestinos" />
 
       <BuscadorCliente
         :showBuscador="showBuscador"
         @cerrarBuscador="showBuscador = false"
         @activarCliente="activarCliente"
+      />
+
+      <BuscadorDestino
+        :showBuscadorDestinos="showBuscadorDestinos"
+        @cerrarBuscador="showBuscadorDestinos = false"
+        @activarDestino="activarDestino"
       />
     </div>
 
@@ -287,7 +293,21 @@
       <div class="flex flex-row justify-between mt-2"></div>
 
       <!-- Aqui va toda la funcionalidad de Destinos -->
-      <div class="w-full p-4 mt-5 bg-gray-100 rounded-xl">
+
+      <!-- Botón de Destinos Recurrentes -->
+      <div class="flex flex-row justify-center mt-5">
+        <div>
+          <button
+            type="button"
+            class="relative px-4 py-1 font-bold text-white bg-primary rounded-xl focus:outline-none"
+            @click.prevent="showBuscadorDestinos = true"
+          >
+            Destinos Recurrentes
+          </button>
+        </div>
+      </div>
+
+      <div class="w-full p-4 mt-2 bg-gray-100 rounded-xl">
         <div class="px-1 text-3xl font-bold text-center text-primary">
           <h2>
             Destinos
@@ -675,6 +695,7 @@ import Pedido from "@/models/pedido";
 import { ModelListSelect } from "vue-search-select";
 import PedidoService from "@/services/pedido.service";
 import BuscadorCliente from "@/components/BuscadorCliente";
+import BuscadorDestino from "@/components/BuscadorDestino";
 import Datepicker from "vuejs-datepicker";
 import { mapState, mapActions } from "vuex";
 import { es } from "vuejs-datepicker/dist/locale";
@@ -690,6 +711,7 @@ export default {
     return {
       nuevoPedido: new Pedido(),
       showBuscador: false,
+      showBuscadorDestinos: false,
       mobikersFiltrados: [],
       alert: {
         message: "",
@@ -841,7 +863,7 @@ export default {
         ) {
           this.pedidos[i].tarifaSugerida = 0;
         }
-        total += parseFloat(this.pedidos[i].tarifa);
+        total += parseFloat(this.pedidos[i].tarifaSugerida);
       }
       this.tarifaTotalSugerida = total;
     },
@@ -1253,6 +1275,18 @@ export default {
       }
     },
 
+    activarDestino(destino) {
+      if (destino) {
+        this.nuevoDestinoIndividual.contactoConsignado = destino.contacto;
+        this.nuevoDestinoIndividual.empresaConsignado = destino.empresa;
+        this.nuevoDestinoIndividual.telefonoConsignado = destino.telefono;
+        this.nuevoDestinoIndividual.direccionConsignado = destino.direccion;
+        this.nuevoDestinoIndividual.distritoConsignado =
+          destino.distrito.distrito;
+        this.nuevoDestinoIndividual.otroDatoConsignado = destino.otroDato;
+      }
+    },
+
     asignarHoy() {
       let hoy = new Date();
       return (this.nuevoPedido.fecha = hoy);
@@ -1352,6 +1386,7 @@ export default {
   components: {
     ModelListSelect,
     BuscadorCliente,
+    BuscadorDestino,
     Datepicker,
     BaseAlerta,
   },
