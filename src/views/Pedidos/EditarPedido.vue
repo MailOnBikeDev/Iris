@@ -629,14 +629,14 @@ export default {
       }
     },
 
-    "editarPedido.recaudo": function() {
-      if (this.editarPedido.recaudo > 0) {
-        this.editarPedido.tarifa = +(this.tarifaMemoria + 2);
-      }
-      if (this.editarPedido.recaudo === 0) {
-        this.editarPedido.tarifa = this.tarifaMemoria;
-      }
-    },
+    // "editarPedido.recaudo": function() {
+    //   if (this.editarPedido.recaudo > 0) {
+    //     this.editarPedido.tarifa = +(this.tarifaMemoria + 2);
+    //   }
+    //   if (this.editarPedido.recaudo === 0) {
+    //     this.editarPedido.tarifa = this.tarifaMemoria;
+    //   }
+    // },
 
     // "editarPedido.modalidad": function() {
     //   if (this.editarPedido.modalidad.tipo === "Con Retorno") {
