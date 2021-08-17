@@ -26,8 +26,8 @@
         />
       </button>
 
-      <!-- <router-link
-        to="/destinos/crear-destino"
+      <router-link
+        to="/empresas/nueva-empresa"
         class="px-6 py-2 font-bold text-white bg-green-600 rounded-xl focus:outline-none hover:bg-green-500"
         custom
         v-slot="{ navigate }"
@@ -35,12 +35,12 @@
         <span @click="navigate" role="link" class="text-center cursor-pointer"
           >Nueva Empresa</span
         >
-      </router-link> -->
+      </router-link>
     </div>
 
     <div class="grid items-center w-full grid-cols-4 border gap-x-2">
       <div
-        class="col-span-3 overflow-y-auto bg-white border border-primary min-h-80 max-h-96"
+        class="col-span-3 overflow-y-auto bg-white border border-primary h-96 max-h-96"
       >
         <Loading v-if="loading" />
 
@@ -75,7 +75,7 @@
       </div>
 
       <div
-        class="h-full overflow-y-auto bg-white border border-primary min-h-80 max-h-96"
+        class="h-full overflow-y-auto bg-white border border-primary h-96 max-h-96"
       >
         <h3
           v-if="!currentEmpresa"

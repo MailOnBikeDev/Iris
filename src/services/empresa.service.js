@@ -22,6 +22,7 @@ class EmpresaService {
         `${API_URL}/nueva-empresa`,
         {
           empresa: nuevaEmpresa.empresa,
+          clientes: nuevaEmpresa.clientes,
         },
         {
           headers: authHeader(),
@@ -40,6 +41,7 @@ class EmpresaService {
         `${API_URL}/empresas-registradas/${id}`,
         {
           empresa: editarEmpresa.empresa,
+          clientes: editarEmpresa.clientes,
         },
         {
           headers: authHeader(),

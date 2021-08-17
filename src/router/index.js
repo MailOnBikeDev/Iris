@@ -236,6 +236,14 @@ const routes = [
       requiresAuth: true,
     },
   },
+  {
+    path: "/empresas/nueva-empresa",
+    name: "NuevaEmpresa",
+    component: () => import("@/views/Empresas/NuevaEmpresa.vue"),
+    meta: {
+      requiresAuth: true,
+    },
+  },
 ];
 
 const router = new VueRouter({
