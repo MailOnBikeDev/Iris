@@ -604,10 +604,6 @@ export default {
   },
   watch: {
     "editarPedido.mobiker": async function() {
-      if (this.editarPedido.mobiker.fullName === "Asignar MoBiker") {
-        this.editarPedido.statusId = 1;
-      }
-
       if (this.editarPedido.mobiker.fullName) {
         const comision = await this.obtenerComision(
           this.editarPedido.mobiker.fullName
