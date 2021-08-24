@@ -90,23 +90,23 @@
             No hay clientes asociados...
           </h3>
 
-          <div
+          <router-link
             v-else
-            class="grid items-center justify-center h-auto py-3 overflow-hidden text-xs text-center border-b-2 cursor-default hover:bg-info border-primary"
+            class="grid items-center justify-center h-auto grid-cols-2 px-2 py-3 overflow-hidden text-xs text-center border-b-2 cursor-default hover:bg-info border-primary"
             v-for="cliente in clientesAsociados"
             :key="cliente.id"
+            :to="`/clientes/tablero-clientes/${cliente.id}`"
+            custom
+            v-slot="{ navigate }"
           >
-            <router-link
-              :to="`/clientes/tablero-clientes/${cliente.id}`"
-              custom
-              v-slot="{ navigate }"
-              class="cursor-pointer"
-            >
-              <span @click="navigate" role="link">
-                {{ cliente.contacto }}
-              </span>
-            </router-link>
-          </div>
+            <span @click="navigate" role="link" class="cursor-pointer">
+              {{ cliente.contacto }}
+            </span>
+
+            <span @click="navigate" role="link" class="cursor-pointer">
+              {{ cliente.distrito.distrito }}
+            </span>
+          </router-link>
         </div>
       </div>
     </div>
