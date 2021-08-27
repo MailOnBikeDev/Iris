@@ -68,7 +68,7 @@ import { es } from "vuejs-datepicker/dist/locale";
 import TablaMobikerTop from "@/components/TablaMobikerTop.vue";
 import Loading from "@/components/Loading";
 
-const primerDia = new Date();
+import Util from "@/services/util.service";
 
 export default {
   name: "MobikerTop",
@@ -80,8 +80,8 @@ export default {
   data() {
     return {
       mobikers: [],
-      fechaInicio: new Date(primerDia.getFullYear(), primerDia.getMonth(), 1),
-      fechaFin: new Date(),
+      fechaInicio: Util.primerDiaMes(),
+      fechaFin: Util.asignarHoy(),
       reporteCopiado: false,
       es: es,
       loading: false,

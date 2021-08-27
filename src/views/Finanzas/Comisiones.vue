@@ -219,7 +219,7 @@ import Datepicker from "vuejs-datepicker";
 import Pagination from "@/components/Pagination.vue";
 import { es } from "vuejs-datepicker/dist/locale";
 
-const seisDiasAtras = new Date().getTime() - 1000 * 60 * 60 * 24 * 6;
+import Util from "@/services/util.service";
 
 export default {
   name: "Comisiones",
@@ -241,8 +241,8 @@ export default {
       currentIndex: -1,
       currentPedido: null,
       currentPedidoIndex: -1,
-      fechaInicio: new Date(seisDiasAtras),
-      fechaFin: new Date(),
+      fechaInicio: Util.seisDiasAtras(),
+      fechaFin: Util.asignarHoy(),
       buscador: "",
 
       loading: false,

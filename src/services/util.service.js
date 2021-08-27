@@ -19,9 +19,22 @@ class Util {
   }
 
   asignarMañana() {
-    let DIA_EN_MS = 24 * 60 * 60 * 1000;
-    let manana = new Date(new Date().getTime() + DIA_EN_MS);
+    const manana = new Date(new Date().getTime() + 24 * 60 * 60 * 1000);
     return dayjs(manana).format("YYYY-MM-DDT10:00:00");
+  }
+
+  seisDiasAtras() {
+    const seisDiasAtras = new Date(
+      new Date().getTime() - 1000 * 60 * 60 * 24 * 6
+    );
+    return dayjs(seisDiasAtras).format("YYYY-MM-DDT10:00:00");
+  }
+
+  primerDiaMes() {
+    const primerDia = new Date();
+    return dayjs(
+      new Date(primerDia.getFullYear(), primerDia.getMonth(), 1)
+    ).format("YYYY-MM-DDT10:00:00");
   }
 }
 

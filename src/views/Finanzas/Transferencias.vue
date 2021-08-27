@@ -84,7 +84,7 @@ import Pagination from "@/components/Pagination.vue";
 import Loading from "@/components/Loading";
 import TablaTransferencias from "@/components/TablaTransferencias.vue";
 
-const seisDiasAtras = new Date().getTime() - 1000 * 60 * 60 * 24 * 6;
+import Util from "@/services/util.service";
 
 export default {
   name: "Transferencias",
@@ -97,8 +97,8 @@ export default {
   data() {
     return {
       pedidos: [],
-      fechaInicio: new Date(seisDiasAtras),
-      fechaFin: new Date(),
+      fechaInicio: Util.seisDiasAtras(),
+      fechaFin: Util.asignarHoy(),
       reporteCopiado: false,
 
       loading: false,
