@@ -129,7 +129,7 @@ class PedidoService {
           operador: editarPedido.operador,
           viajes: editarPedido.viajes,
           isRuteo: editarPedido.isRuteo,
-          ruteoId: editarPedido.ruteo,
+          ruteoId: editarPedido.ruteoId,
         },
         { headers: authHeader() }
       );

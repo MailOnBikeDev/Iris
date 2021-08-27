@@ -582,6 +582,8 @@ export default {
     try {
       await this.getPedido(this.$route.params.id);
 
+      console.log(this.editarPedido);
+
       this.mobikersFiltrados = this.mobikers.filter(
         (mobiker) => mobiker.status === "Activo"
       );
@@ -718,6 +720,7 @@ export default {
         this.editarPedido = response.data;
         this.editarPedido.distritoConsignado = response.data.distrito.distrito;
         this.editarPedido.tipoEnvio = response.data.tipoDeEnvio.tipo;
+        this.editarPedido.ruteoId = response.data.ruteoId;
 
         // Memoria del Pedido
         this.memoria.tarifa = response.data.tarifa;
@@ -726,8 +729,6 @@ export default {
         this.memoria.modalidad = response.data.modalidad.tipo;
         this.memoria.distancia = this.editarPedido.distancia;
         this.memoria.recaudo = this.editarPedido.recaudo;
-
-        console.log(this.memoria);
 
         // Acomodando Fechas
         this.editarPedido.fecha = new Date(
