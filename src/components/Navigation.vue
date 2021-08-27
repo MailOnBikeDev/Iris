@@ -16,18 +16,18 @@
 
     <div v-if="currentUser" class="flex flex-row items-center space-x-6">
       <!-- Navigation -->
-      <div v-for="nav in navigationMenu" :key="nav.title">
-        <router-link
-          :to="nav.link"
-          custom
-          v-slot="{ navigate, isActive }"
-          class="p-2 font-bold rounded-lg cursor-pointer"
-        >
-          <span @click="navigate" role="link" :class="{ 'bg-info': isActive }">
-            {{ nav.title }}
-          </span>
-        </router-link>
-      </div>
+      <router-link
+        v-for="nav in navigationMenu"
+        :key="nav.title"
+        :to="nav.link"
+        custom
+        v-slot="{ navigate, isActive }"
+        class="p-2 font-bold rounded-lg cursor-pointer"
+      >
+        <span @click="navigate" role="link" :class="{ 'bg-info': isActive }">
+          {{ nav.title }}
+        </span>
+      </router-link>
 
       <!-- Dropdown Menu -->
       <div>
@@ -71,14 +71,17 @@
       </div>
     </div>
 
-    <div class="content-center ml-auto mr-4" v-else>
-      <div class="flex mr-4">
-        <router-link to="/login" custom v-slot="{ navigate }" class="link">
-          <span @click="navigate" role="link">
-            Login
-          </span>
-        </router-link>
-      </div>
+    <div class="content-center" v-else>
+      <router-link
+        to="/login"
+        custom
+        v-slot="{ navigate }"
+        class="font-bold cursor-pointer"
+      >
+        <span @click="navigate" role="link">
+          Inicia Sesión
+        </span>
+      </router-link>
     </div>
   </nav>
 </template>
