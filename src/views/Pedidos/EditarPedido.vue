@@ -719,6 +719,7 @@ export default {
         this.editarPedido.distritoConsignado = response.data.distrito.distrito;
         this.editarPedido.tipoEnvio = response.data.tipoDeEnvio.tipo;
         this.editarPedido.ruteoId = response.data.ruteoId;
+        console.log("fecha:", response.data.fecha);
 
         // Memoria del Pedido
         this.memoria.tarifa = response.data.tarifa;
@@ -730,7 +731,7 @@ export default {
 
         // Acomodando Fechas
         this.editarPedido.fecha = new Date(
-          new Date(this.editarPedido.fecha).getTime() + 1000 * 60 * 60 * 5
+          new Date(response.data.fecha).getTime() + 1000 * 60 * 60 * 5
         );
       } catch (error) {
         console.error("Mensaje de error:", error);
@@ -744,8 +745,8 @@ export default {
           return;
         }
 
-        this.editarPedido.fecha = new Date(
-          new Date(this.editarPedido.fecha).getTime() - 1000 * 60 * 60 * 5
+        this.editarPedido.fecha = this.$date(this.editarPedido.fecha).format(
+          "YYYY-MM-DD"
         );
         const response = await PedidoService.editPedido(
           this.$route.params.id,
