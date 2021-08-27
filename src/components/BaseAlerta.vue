@@ -16,16 +16,3 @@ export default {
   },
 };
 </script>
-
-<style lang="scss">
-.alerta-enter,
-.alerta-leave-to {
-  opacity: 0;
-  transform: translateX(200px);
-}
-
-.alerta-enter-active,
-.alerta-leave-active {
-  transition: all 0.5s ease;
-}
-</style>
