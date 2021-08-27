@@ -1505,10 +1505,6 @@ export default {
         this.pedido.recaudo = 0;
         this.pedido.tramite = 0;
 
-        // Acomodando Fechas
-        this.pedido.fecha = new Date(
-          new Date(this.pedido.fecha).getTime() + 1000 * 60 * 60 * 5
-        );
       } catch (error) {
         console.error(`Error al obtener un Ruteo por Id. ${error.message}`);
       }

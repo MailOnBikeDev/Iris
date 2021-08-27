@@ -1133,12 +1133,8 @@ export default {
               this.pedidos[i].tarifa * comision
             ).toFixed(2);
 
-            // Acomodando Fechas
-            const acomodandoFecha = new Date(
-              new Date(this.nuevoPedido.fecha).getTime() - 1000 * 60 * 60 * 5
-            );
             let pedidoExtendido = {
-              fecha: acomodandoFecha,
+              fecha: this.nuevoPedido.fecha,
               contactoRemitente: this.nuevoPedido.contactoRemitente,
               empresaRemitente: this.nuevoPedido.empresaRemitente,
               direccionRemitente: this.nuevoPedido.direccionRemitente,
