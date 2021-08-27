@@ -456,6 +456,13 @@ export default {
           return;
         }
 
+        this.nuevoMobiker.fechaIngreso = this.$date(
+          this.nuevoMobiker.fechaIngreso
+        ).format("YYYY-MM-DDT10:00:00");
+        this.nuevoMobiker.fechaNacimiento = this.$date(
+          this.nuevoMobiker.fechaNacimiento
+        ).format("YYYY-MM-DDT10:00:00");
+
         const response = await MobikerService.storageNuevoMobiker(
           this.nuevoMobiker
         );

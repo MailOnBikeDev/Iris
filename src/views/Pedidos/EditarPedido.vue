@@ -741,6 +741,10 @@ export default {
           return;
         }
 
+        this.editarPedido.fecha = this.$date(this.editarPedido.fecha).format(
+          "YYYY-MM-DDT10:00:00"
+        );
+
         const response = await PedidoService.editPedido(
           this.$route.params.id,
           this.editarPedido

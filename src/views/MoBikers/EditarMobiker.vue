@@ -467,6 +467,13 @@ export default {
           return;
         }
 
+        this.editarMobiker.fechaIngreso = this.$date(
+          this.editarMobiker.fechaIngreso
+        ).format("YYYY-MM-DDT10:00:00");
+        this.editarMobiker.fechaNacimiento = this.$date(
+          this.editarMobiker.fechaNacimiento
+        ).format("YYYY-MM-DDT10:00:00");
+
         const response = await MobikerService.editMobiker(
           this.$route.params.id,
           this.editarMobiker

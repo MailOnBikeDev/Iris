@@ -371,6 +371,8 @@ export default {
 
     activarEmpresa(empresa) {
       this.editarCliente.razonComercial = empresa.empresa;
+      this.editarCliente.ruc = empresa.ruc;
+      this.editarCliente.comprobante = empresa.comprobante;
     },
 
     cancelar() {

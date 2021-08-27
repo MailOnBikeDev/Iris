@@ -1134,7 +1134,9 @@ export default {
             );
 
             let pedidoExtendido = {
-              fecha: this.pedido.fecha,
+              fecha: this.$date(this.pedido.fecha).format(
+                "YYYY-MM-DDT10:00:00"
+              ),
               contactoRemitente: this.pedido.contactoRemitente,
               empresaRemitente: this.pedido.empresaRemitente,
               direccionRemitente: this.pedido.direccionRemitente,
@@ -1186,7 +1188,9 @@ export default {
             );
 
             let pedidoExtendido = {
-              fecha: this.pedido.fecha,
+              fecha: this.$date(this.pedido.fecha).format(
+                "YYYY-MM-DDT10:00:00"
+              ),
               contactoRemitente: this.pedido.contactoRemitente,
               empresaRemitente: this.pedido.empresaRemitente,
               direccionRemitente: this.pedido.direccionRemitente,
@@ -1384,7 +1388,7 @@ export default {
         this.pedido.status = 1;
 
         this.memoriaCliente = cliente;
-        this.memoriaCliente.fecha = new Date();
+        this.memoriaCliente.fecha = Util.asignarHoy();
       }
     },
 

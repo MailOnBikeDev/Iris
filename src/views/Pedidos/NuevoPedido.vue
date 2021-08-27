@@ -699,6 +699,9 @@ export default {
           return;
         }
 
+        this.nuevoPedido.fecha = this.$date(this.nuevoPedido.fecha).format(
+          "YYYY-MM-DDT10:00:00"
+        );
         this.nuevoPedido.operador = this.$store.getters.operador;
         this.nuevoPedido.isRuteo = false;
 

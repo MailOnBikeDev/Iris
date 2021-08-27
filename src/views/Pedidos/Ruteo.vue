@@ -1088,7 +1088,9 @@ export default {
             ).toFixed(2);
 
             let pedidoExtendido = {
-              fecha: this.nuevoPedido.fecha,
+              fecha: this.$date(this.nuevoPedido.fecha).format(
+                "YYYY-MM-DDT10:00:00"
+              ),
               contactoRemitente: this.nuevoPedido.contactoRemitente,
               empresaRemitente: this.nuevoPedido.empresaRemitente,
               direccionRemitente: this.nuevoPedido.direccionRemitente,
@@ -1135,7 +1137,9 @@ export default {
             ).toFixed(2);
 
             let pedidoExtendido = {
-              fecha: this.nuevoPedido.fecha,
+              fecha: this.$date(this.nuevoPedido.fecha).format(
+                "YYYY-MM-DDT10:00:00"
+              ),
               contactoRemitente: this.nuevoPedido.contactoRemitente,
               empresaRemitente: this.nuevoPedido.empresaRemitente,
               direccionRemitente: this.nuevoPedido.direccionRemitente,
@@ -1266,7 +1270,7 @@ export default {
         this.nuevoPedido.status = 1;
 
         this.memoriaCliente = cliente;
-        this.memoriaCliente.fecha = new Date();
+        this.memoriaCliente.fecha = Util.asignarHoy();
 
         this.getPedidosByCliente(cliente.id);
       }

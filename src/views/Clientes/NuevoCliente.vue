@@ -362,6 +362,8 @@ export default {
 
     activarEmpresa(empresa) {
       this.nuevoCliente.razonComercial = empresa.empresa;
+      this.nuevoCliente.ruc = empresa.ruc;
+      this.nuevoCliente.comprobante = empresa.comprobante;
     },
 
     cancelar() {
