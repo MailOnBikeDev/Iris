@@ -47,7 +47,10 @@
       class="flex flex-col justify-center text-xs border-b-2 border-secondary"
     >
       <h2 class="my-4 text-2xl font-bold text-center text-primary">
-        Origen
+        <span v-if="infoRuta.pedidosRuta[0].rolCliente === 'Remitente'"
+          >Origen</span
+        >
+        <span v-else>Destino</span>
       </h2>
 
       <div class="mx-auto mb-4">
@@ -167,7 +170,7 @@
               v-if="ruta.otroDatoConsignado"
               @click="navigate"
               role="link"
-              class="font-bold cursor-pointer text-primary"
+              class="cursor-pointer "
               >{{ ruta.otroDatoConsignado }}</span
             >
 

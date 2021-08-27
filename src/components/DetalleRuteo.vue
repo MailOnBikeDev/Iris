@@ -25,17 +25,6 @@
     <InfoRuteo :infoRuta="currentRuta" />
 
     <div class="flex flex-row justify-around mt-6">
-      <!-- <router-link
-      :to="`/pedidos/tablero-pedidos/${currentPedido.id}`"
-        custom
-        v-slot="{ navigate }"
-        class="px-6 py-2 font-bold text-white bg-green-600 rounded-xl focus:outline-none hover:bg-green-500"
-      >
-        <span @click="navigate" role="link" class="text-center cursor-pointer"
-          >Editar Ruteo</span
-        >
-      </router-link> -->
-
       <button
         class="px-6 py-2 font-bold text-white bg-secondary rounded-xl focus:outline-none hover:bg-info"
         @click="asignarRuteo"
