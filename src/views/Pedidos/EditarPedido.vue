@@ -582,8 +582,6 @@ export default {
     try {
       await this.getPedido(this.$route.params.id);
 
-      console.log(this.editarPedido);
-
       this.mobikersFiltrados = this.mobikers.filter(
         (mobiker) => mobiker.status === "Activo"
       );
@@ -746,6 +744,9 @@ export default {
           return;
         }
 
+        this.editarPedido.fecha = new Date(
+          new Date(this.editarPedido.fecha).getTime() - 1000 * 60 * 60 * 5
+        );
         const response = await PedidoService.editPedido(
           this.$route.params.id,
           this.editarPedido
